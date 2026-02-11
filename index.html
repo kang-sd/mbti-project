@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>프리미엄 MBTI 정밀 분석 리포트</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <style>
+    :root { --primary: #6c5ce7; --bg: #f0f2f5; --accent: #a18cd1; --danger: #ff7675; }
+    body { margin: 0; padding: 10px; background: var(--bg); font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; display: flex; justify-content: center; color: #2d3436; }
+    .container { width: 100%; max-width: 500px; }
+    .glass-card { background: white; border-radius: 25px; padding: 25px 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; margin-bottom: 15px; }
+    
+    /* 시작 화면 안내 */
+    .info-box { background: #f8f9fa; border-radius: 15px; padding: 15px; margin: 20px 0; text-align: left; font-size: 14px; line-height: 1.6; border: 1px solid #eee; }
+    .info-title { font-weight: 800; color: var(--primary); display: block; margin-bottom: 8px; font-size: 16px; }
+
+    input#nameInput { width: 100%; padding: 18px; border-radius: 12px; border: 2px solid #eee; margin-bottom: 15px; font-size: 16px; outline: none; box-sizing: border-box; }
+    .btn-action { width: 100%; padding: 18px; border: none; border-radius: 15px; font-size: 18px; font-weight: 800; cursor: pointer; background: var(--primary); color: white; transition: all 0.3s; }
+    .btn-action:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(108, 92, 231, 0.3); }
+    
+    #result, #admin-panel, #quiz-area { display: none; }
+    
+    /* 리포트 섹션 디자인 */
+    .mbti-badge { font-size: 60px; font-weight: 900; color: var(--primary); margin: 5px 0; letter-spacing: -2px; }
+    .alias-text { font-size: 17px; font-weight: 700; color: #636e72; margin-bottom: 8px; line-height: 1.4; }
+    .section { background: #f8f9fa; border-radius: 15px; padding: 15px; margin-bottom: 12px; text-align: left; border-left: 4px solid var(--primary); }
+    .section-h { font-weight: 800; color: var(--primary); margin-bottom: 8px; display: block; font-size: 15px; }
+    
+    .grid-box { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+    .mini-card { background: white; padding: 12px; border-radius: 12px; border: 1px solid #eee; font-size: 13px; }
+    .mini-card b { color: var(--primary); display: block; margin-bottom: 4px; }
+
+    .ans-btn { width: 100%; padding: 16px; margin: 8px 0; border: 2px solid #edf2f7; border-radius: 12px; background: white; cursor: pointer; font-size: 16px; text-align: left; transition: all 0.2s; }
+    .ans-btn:hover { border-color: #d6d9e0; }
+    .ans-btn.active { border-color: var(--primary); background: #f3f0ff; color: var(--primary); font-weight: bold; }
+    
+    .admin-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; }
+    .admin-item:hover { background: #f8f9fa; }
+    
+    .loading { color: #999; padding: 20px; text-align: center; }
+
+    @media print {
+      .btn-action { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="start-area" class="glass-card">
+      <div style="cursor:pointer; font-size:35px; margin-bottom:10px;" onclick="adminLogin()">🔮</div>
+      <h2 style="color:var(--primary); margin:0;">프리미엄 MBTI 성향 분석</h2>
+      <div class="info-box">
+        <span class="info-title">💡 성격 분석 검사란?</span>
+        성격 유형은 총 16가지이며 의사소통, 대인관계, 진로, 적성 등을 알 수 있는 정밀 테스트입니다. 그래프와 성향을 함께 제공합니다.
+        <hr style="border:0; border-top:1px solid #eee; margin:12px 0;">
+        <span class="info-title">🔍 검사 유의사항</span>
+        <div>- 본 검사는 유효한 결과를 위해 <b>66문항</b>으로 구성합니다</div>
+        <div>- 결과는 <b>3일간 보관</b>되며 이후 자동 삭제됩니다</div>
+        <div>- 기존 검사자는 <b>이름 검색</b>으로 결과를 다시 볼 수 있습니다.</div>
+      </div>
+      <input type="text" id="nameInput" placeholder="이름을 입력해주세요">
+      <button class="btn-action" onclick="startQuiz()">분석 시작 및 결과 확인</button>
+    </div>
+
+    <div id="quiz-area"></div>
+    <button id="submit-btn" class="btn-action" onclick="submit()" style="display:none; background:#2d3436; margin-top:20px;">최종 리포트 생성</button>
+
+    <div id="result">
+      <div id="capture-area" class="glass-card">
+        <p id="res-user" style="color:#b2bec3; font-size:13px; margin:0;"></p>
+        <h1 class="mbti-badge" id="res-mbti"></h1>
+        <div class="alias-text" id="res-alias"></div>
+        <div style="color:var(--primary); font-size:12px; font-weight:600; margin-bottom:15px;" id="res-keywords"></div>
+        
+        <div style="width:100%; height:300px; margin: 15px auto; position:relative;">
+          <canvas id="mbtiChart"></canvas>
+        </div>
+
+        <div class="section"><span class="section-h">📖 공통점 및 요약</span><div id="res-desc" style="font-size:13px; line-height:1.6;"></div></div>
+        
+        <div class="section" style="background:#fff9db; border-color:#fab005;"><span class="section-h" style="color:#f08c00;">📜 속담 및 격언</span><div id="res-quote" style="font-size:13px; font-style:italic;"></div></div>
+
+        <div class="grid-box">
+          <div class="mini-card"><b>💪 장점</b><span id="res-pros"></span></div>
+          <div class="mini-card"><b>⚠️ 단점</b><span id="res-cons"></span></div>
+          <div class="mini-card"><b>🤫 싫어하는 말</b><span id="res-hate"></span></div>
+          <div class="mini-card"><b>📢 자주 듣는 말</b><span id="res-often"></span></div>
+        </div>
+
+        <div class="section" style="background:#f1f3ff;"><span class="section-h">🗣️ 소통 및 리더십 스타일</span>
+          <p style="font-size:12px; margin:5px 0;"><b>• 의사소통:</b> <span id="res-comm"></span></p>
+          <p style="font-size:12px; margin:5px 0;"><b>• 리더십:</b> <span id="res-lead"></span></p>
+          <p style="font-size:12px; margin:5px 0;"><b>• 인간관계:</b> <span id="res-rel"></span></p>
+        </div>
+
+        <div class="section" style="background:#fff0f6;"><span class="section-h" style="color:#d6336c;">⚡ 스트레스 및 성장</span>
+          <p style="font-size:12px; margin:5px 0;"><b>• 스트레스 반응:</b> <span id="res-stress"></span></p>
+          <p style="font-size:12px; margin:5px 0;"><b>• 성장 전략:</b> <span id="res-growth"></span></p>
+        </div>
+
+        <div class="section" style="background:#e7f5ff; border-color:#228be6;"><span class="section-h" style="color:#228be6;">💼 추천 진로 및 직업</span><div id="res-jobs" style="font-size:13px; font-weight:bold;"></div></div>
+      </div>
+      <button id="back-to-admin" class="btn-action" onclick="goBackToAdmin()" style="display:none; background:#636e72; margin-top:10px;">관리자 목록으로</button>
+      <button class="btn-action" onclick="downloadImg()" style="background:#00b894; margin-top:10px;">💾 이미지 저장</button>
+    </div>
+
+    <div id="admin-panel" class="glass-card">
+        <h3 style="color:var(--primary); margin-top:0;">📊 관리자 모드</h3>
+        <p style="font-size:13px; color:#636e72;">이름을 클릭하면 결과를 확인할 수 있습니다.</p>
+        <div id="admin-list" style="max-height:400px; overflow-y:auto;"></div>
+        <button class="btn-action" onclick="location.reload()" style="margin-top:15px; background:#636e72;">메인 화면으로</button>
+    </div>
+  </div>
+
+  <script type="module">
+    // ✅ Firebase v9+ 모듈형 SDK (최신 버전)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, addDoc, query, where, orderBy, deleteDoc, doc, Timestamp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyABtOy0Gwt3arVgux2DbKQgsRfCGKSN8Rw",
+      authDomain: "mbti-project-cb2a0.firebaseapp.com",
+      projectId: "mbti-project-cb2a0",
+      storageBucket: "mbti-project-cb2a0.firebasestorage.app",
+      messagingSenderId: "146486130928",
+      appId: "1:146486130928:web:bac3b2d2c0b229d2222a35"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    
+    let questions = [], answers = {}, currentChart = null;
+
+    console.log("🔥 Firebase 초기화 완료");
+
+    // ==========================================
+    // 관리자 로그인
+    // ==========================================
+    window.adminLogin = async () => {
+      const pw = prompt("관리자 비밀번호를 입력하세요");
+      if (pw !== "6128") {
+        if (pw !== null) alert("비밀번호가 틀렸습니다.");
+        return;
+      }
+      
+      console.log("✅ 관리자 모드 진입");
+      document.getElementById("start-area").style.display = "none";
+      document.getElementById("admin-panel").style.display = "block";
+      await refreshAdminList();
+    };
+
+    // ==========================================
+    // 관리자 리스트 새로고침 (3일 지난 데이터 자동 삭제)
+    // ==========================================
+    async function refreshAdminList() {
+      try {
+        const list = document.getElementById("admin-list");
+        list.innerHTML = '<div class="loading">로딩 중...</div>';
+        
+        const q = query(collection(db, "results"), orderBy("date", "desc"));
+        const snap = await getDocs(q);
+        
+        // ✅ 3일 경과 데이터 자동 삭제
+        const expiry = new Date();
+        expiry.setDate(expiry.getDate() - 3);
+        
+        list.innerHTML = "";
+        let validCount = 0;
+        
+        for (const dSnap of snap.docs) {
+          const d = dSnap.data();
+          const id = dSnap.id;
+          
+          // 날짜 타입 체크 및 변환
+          let docDate;
+          if (d.date && d.date.toDate) {
+            docDate = d.date.toDate(); // Firestore Timestamp
+          } else if (d.date instanceof Date) {
+            docDate = d.date;
+          } else {
+            docDate = new Date(d.date); // 문자열 등
+          }
+          
+          // 3일 지난 기록 삭제
+          if (docDate < expiry) {
+            console.log(`🗑️ 오래된 기록 삭제: ${d.name} (${docDate.toLocaleDateString()})`);
+            await deleteDoc(doc(db, "results", id));
+            continue;
+          }
+          
+          validCount++;
+          const div = document.createElement("div");
+          div.className = "admin-item";
+          div.innerHTML = `
+            <div onclick="viewResult('${id}')" style="flex-grow:1; cursor:pointer;">
+              <b>${d.name}</b> [${d.mbti || 'N/A'}]
+              <br><small style="color:#999;">${docDate.toLocaleDateString()} ${docDate.toLocaleTimeString()}</small>
+            </div>
+            <button 
+              style="color:white; background:#ff7675; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:bold;" 
+              onclick="deleteUser('${id}')">
+              삭제
+            </button>
+          `;
+          list.appendChild(div);
+        }
+        
+        if (validCount === 0) {
+          list.innerHTML = '<div class="loading">저장된 결과가 없습니다.</div>';
+        }
+        
+        console.log(`✅ 총 ${validCount}개 결과 로드 완료`);
+        
+      } catch(e) {
+        console.error("❌ 관리자 리스트 로드 실패:", e);
+        document.getElementById("admin-list").innerHTML = '<div class="loading" style="color:red;">로드 실패</div>';
+      }
+    }
+
+    // ==========================================
+    // 특정 결과 보기
+    // ==========================================
+    window.viewResult = async (id) => {
+      console.log(`📊 결과 조회: ${id}`);
+      
+      try {
+        const snap = await getDocs(collection(db, "results"));
+        let found = false;
+        
+        snap.forEach(dSnap => {
+          if (dSnap.id === id) {
+            const d = dSnap.data();
+            document.getElementById("back-to-admin").style.display = "block";
+            showResult(d.mbti, d.scores, d.name);
+            found = true;
+          }
+        });
+        
+        if (!found) {
+          alert("결과를 찾을 수 없습니다.");
+        }
+      } catch(e) {
+        console.error("❌ 결과 조회 실패:", e);
+        alert("결과 조회 중 오류가 발생했습니다.");
+      }
+    };
+
+    // ==========================================
+    // 사용자 삭제
+    // ==========================================
+    window.deleteUser = async (id) => {
+      if (!confirm("이 결과를 삭제하시겠습니까?")) return;
+      
+      try {
+        await deleteDoc(doc(db, "results", id));
+        console.log(`✅ 삭제 완료: ${id}`);
+        alert("삭제되었습니다.");
+        await refreshAdminList();
+      } catch(e) {
+        console.error("❌ 삭제 실패:", e);
+        alert("삭제 중 오류가 발생했습니다.");
+      }
+    };
+
+    // ==========================================
+    // 관리자 모드로 돌아가기
+    // ==========================================
+    window.goBackToAdmin = () => {
+      document.getElementById("result").style.display = "none";
+      document.getElementById("admin-panel").style.display = "block";
+      document.getElementById("back-to-admin").style.display = "none";
+    };
+
+    // ==========================================
+    // 퀴즈 시작
+    // ==========================================
+    window.startQuiz = async () => {
+      const name = document.getElementById("nameInput").value.trim();
+      if (!name) {
+        alert("이름을 입력해주세요!");
+        return;
+      }
+      
+      console.log(`🎯 ${name}님 검사 시작`);
+      
+      try {
+        // 기존 결과 확인
+        const rSnap = await getDocs(collection(db, "results"));
+        let existingResult = null;
+        
+        rSnap.forEach(d => {
+          if (d.data().name === name) {
+            existingResult = d.data();
+          }
+        });
+        
+        // 기존 결과가 있으면 확인 후 표시
+        if (existingResult && existingResult.scores) {
+          if (confirm(`${name}님의 기존 결과가 있습니다. 바로 보시겠습니까?\n(취소 시 새로 검사합니다)`)) {
+            showResult(existingResult.mbti, existingResult.scores, name);
+            return;
+          }
+        }
+        
+        // 질문 로드
+        const qSnap = await getDocs(collection(db, "questions"));
+        questions = [];
+        qSnap.forEach(d => {
+          questions.push({ id: d.id, ...d.data() });
+        });
+        
+        // ID 기준 정렬 (숫자 순서대로)
+        questions.sort((a, b) => {
+          return a.id.localeCompare(b.id, undefined, { numeric: true });
+        });
+        
+        console.log(`✅ ${questions.length}개 문항 로드 완료`);
+        
+        // 퀴즈 화면 생성
+        const area = document.getElementById("quiz-area");
+        area.innerHTML = "";
+        
+        questions.forEach((q, i) => {
+          area.innerHTML += `
+            <div class="glass-card" style="text-align:left;">
+              <b>Q${i + 1}.</b> ${q.text}
+              <br>
+              <button class="ans-btn" onclick="sel('${q.id}','${q.code1}',this)">${q.a}</button>
+              <button class="ans-btn" onclick="sel('${q.id}','${q.code2}',this)">${q.b}</button>
+            </div>
+          `;
+        });
+        
+        document.getElementById("start-area").style.display = "none";
+        area.style.display = "block";
+        document.getElementById("submit-btn").style.display = "block";
+        window.scrollTo(0, 0);
+        
+      } catch(e) {
+        console.error("❌ 퀴즈 시작 실패:", e);
+        alert("검사를 시작할 수 없습니다. 잠시 후 다시 시도해주세요.");
+      }
+    };
+
+    // ==========================================
+    // 답변 선택
+    // ==========================================
+    window.sel = (id, code, button) => {
+      answers[id] = code;
+      button.parentElement.querySelectorAll(".ans-btn").forEach(btn => {
+        btn.classList.remove("active");
+      });
+      button.classList.add("active");
+      console.log(`선택: ${id} -> ${code}`);
+    };
+
+    // ==========================================
+    // 제출
+    // ==========================================
+    window.submit = async () => {
+      if (Object.keys(answers).length < questions.length) {
+        alert(`모든 문항에 답변해주세요!\n(현재 ${Object.keys(answers).length}/${questions.length})`);
+        return;
+      }
+      
+      console.log("📝 답변 제출 중...");
+      
+      try {
+        // 점수 계산
+        let scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+        Object.values(answers).forEach(code => {
+          scores[code]++;
+        });
+        
+        // MBTI 유형 결정
+        const mbti = 
+          (scores.E >= scores.I ? "E" : "I") +
+          (scores.S >= scores.N ? "S" : "N") +
+          (scores.T >= scores.F ? "T" : "F") +
+          (scores.J >= scores.P ? "J" : "P");
+        
+        console.log(`✅ MBTI 결과: ${mbti}`, scores);
+        
+        // Firestore에 저장 (Timestamp 사용)
+        await addDoc(collection(db, "results"), {
+          name: document.getElementById("nameInput").value.trim(),
+          mbti: mbti,
+          scores: scores,
+          date: Timestamp.now() // ✅ Firestore Timestamp 사용
+        });
+        
+        console.log("✅ 결과 저장 완료");
+        
+        // 결과 표시
+        showResult(mbti, scores, document.getElementById("nameInput").value.trim());
+        
+      } catch(e) {
+        console.error("❌ 제출 실패:", e);
+        alert("결과 저장 중 오류가 발생했습니다.");
+      }
+    };
+
+    // ==========================================
+    // 결과 표시
+    // ==========================================
+    async function showResult(mbti, scores, name) {
+      console.log(`📊 결과 표시: ${mbti} (${name})`);
+      
+      try {
+        // MBTI 정보 가져오기
+        const iSnap = await getDocs(collection(db, "mbti_infos"));
+        let info = {};
+        
+        iSnap.forEach(d => {
+          if (d.id === mbti) {
+            info = d.data();
+          }
+        });
+        
+        // 화면 전환
+        document.getElementById("start-area").style.display = "none";
+        document.getElementById("admin-panel").style.display = "none";
+        document.getElementById("quiz-area").style.display = "none";
+        document.getElementById("submit-btn").style.display = "none";
+        document.getElementById("result").style.display = "block";
+        
+        // 결과 데이터 표시
+        document.getElementById("res-user").innerText = `${name}님의 분석 리포트`;
+        document.getElementById("res-mbti").innerText = mbti;
+        document.getElementById("res-keywords").innerText = info["키워드"] || "";
+        document.getElementById("res-alias").innerText = info["별칭(일반적 특징)"] || "";
+        document.getElementById("res-desc").innerHTML = info["공통점"] || "";
+        document.getElementById("res-quote").innerText = info["속담/격언"] || "";
+        document.getElementById("res-pros").innerText = info["장점"] || "";
+        document.getElementById("res-cons").innerText = info["단점"] || "";
+        document.getElementById("res-hate").innerText = info["싫어하는 말"] || "";
+        document.getElementById("res-often").innerText = info["자주 듣는 말"] || "";
+        document.getElementById("res-comm").innerText = info["의사소통 스타일"] || "";
+        document.getElementById("res-lead").innerText = info["리더십 스타일"] || "";
+        document.getElementById("res-rel").innerText = info["인간관계 스타일"] || "";
+        document.getElementById("res-stress").innerText = info["스트레스 반응"] || "";
+        document.getElementById("res-growth").innerText = info["성장 전략"] || "";
+        document.getElementById("res-jobs").innerText = info["진로 및 직업 추천"] || "";
+        
+        // 차트 그리기 (약간의 지연 후)
+        setTimeout(() => drawChart(scores), 500);
+        window.scrollTo(0, 0);
+        
+        console.log("✅ 결과 표시 완료");
+        
+      } catch(e) {
+        console.error("❌ 결과 표시 실패:", e);
+        alert("결과를 표시하는 중 오류가 발생했습니다.");
+      }
+    }
+
+    // ==========================================
+    // 차트 그리기
+    // ==========================================
+    function drawChart(scores) {
+      if (currentChart) {
+        currentChart.destroy();
+      }
+      
+      const ctx = document.getElementById('mbtiChart').getContext('2d');
+      
+      // 백분율 계산
+      const ePercent = (scores.E / (scores.E + scores.I)) * 100;
+      const sPercent = (scores.S / (scores.S + scores.N)) * 100;
+      const tPercent = (scores.T / (scores.T + scores.F)) * 100;
+      const jPercent = (scores.J / (scores.J + scores.P)) * 100;
+      
+      currentChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: [
+            `외향 ${ePercent.toFixed(0)}% / 내향 ${(100 - ePercent).toFixed(0)}%`,
+            `감각 ${sPercent.toFixed(0)}% / 직관 ${(100 - sPercent).toFixed(0)}%`,
+            `사고 ${tPercent.toFixed(0)}% / 감정 ${(100 - tPercent).toFixed(0)}%`,
+            `판단 ${jPercent.toFixed(0)}% / 인식 ${(100 - jPercent).toFixed(0)}%`
+          ],
+          datasets: [{
+            label: '성향 분석',
+            data: [ePercent, sPercent, tPercent, jPercent],
+            backgroundColor: 'rgba(108, 92, 231, 0.2)',
+            borderColor: '#6c5ce7',
+            borderWidth: 3,
+            pointBackgroundColor: '#6c5ce7',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 5
+          }]
+        },
+        options: {
+          scales: {
+            r: {
+              min: 0,
+              max: 100,
+              ticks: {
+                display: false
+              },
+              pointLabels: {
+                font: {
+                  size: 11,
+                  weight: 'bold'
+                }
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+      
+      console.log("✅ 차트 생성 완료");
+    }
+
+    // ==========================================
+    // 이미지 다운로드
+    // ==========================================
+    window.downloadImg = () => {
+      console.log("💾 이미지 저장 시작...");
+      
+      html2canvas(document.getElementById("capture-area"), {
+        scale: 2, // 고해상도
+        backgroundColor: '#ffffff'
+      }).then(canvas => {
+        const link = document.createElement("a");
+        link.href = canvas.toDataURL("image/png");
+        link.download = `MBTI_Result_${document.getElementById("res-mbti").innerText}_${new Date().getTime()}.png`;
+        link.click();
+        console.log("✅ 이미지 저장 완료");
+      }).catch(e => {
+        console.error("❌ 이미지 저장 실패:", e);
+        alert("이미지 저장 중 오류가 발생했습니다.");
+      });
+    };
+  </script>
+</body>
+</html>
