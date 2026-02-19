@@ -2,544 +2,383 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>프리미엄 MBTI 정밀 분석 리포트</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>성격 분석 검사</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    :root { --primary: #6c5ce7; --bg: #f0f2f5; --accent: #a18cd1; --danger: #ff7675; }
-    body { margin: 0; padding: 10px; background: var(--bg); font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; display: flex; justify-content: center; color: #2d3436; }
-    .container { width: 100%; max-width: 500px; }
-    .glass-card { background: white; border-radius: 25px; padding: 25px 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; margin-bottom: 15px; }
-    
-    /* 시작 화면 안내 */
-    .info-box { background: #f8f9fa; border-radius: 15px; padding: 15px; margin: 20px 0; text-align: left; font-size: 14px; line-height: 1.6; border: 1px solid #eee; }
-    .info-title { font-weight: 800; color: var(--primary); display: block; margin-bottom: 8px; font-size: 16px; }
-
-    input#nameInput { width: 100%; padding: 18px; border-radius: 12px; border: 2px solid #eee; margin-bottom: 15px; font-size: 16px; outline: none; box-sizing: border-box; }
-    .btn-action { width: 100%; padding: 18px; border: none; border-radius: 15px; font-size: 18px; font-weight: 800; cursor: pointer; background: var(--primary); color: white; transition: all 0.3s; }
-    .btn-action:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(108, 92, 231, 0.3); }
-    
-    #result, #admin-panel, #quiz-area { display: none; }
-    
-    /* 리포트 섹션 디자인 */
-    .mbti-badge { font-size: 60px; font-weight: 900; color: var(--primary); margin: 5px 0; letter-spacing: -2px; }
-    .alias-text { font-size: 17px; font-weight: 700; color: #636e72; margin-bottom: 8px; line-height: 1.4; }
-    .section { background: #f8f9fa; border-radius: 15px; padding: 15px; margin-bottom: 12px; text-align: left; border-left: 4px solid var(--primary); }
-    .section-h { font-weight: 800; color: var(--primary); margin-bottom: 8px; display: block; font-size: 15px; }
-    
-    .grid-box { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-    .mini-card { background: white; padding: 12px; border-radius: 12px; border: 1px solid #eee; font-size: 13px; }
-    .mini-card b { color: var(--primary); display: block; margin-bottom: 4px; }
-
-    .ans-btn { width: 100%; padding: 16px; margin: 8px 0; border: 2px solid #edf2f7; border-radius: 12px; background: white; cursor: pointer; font-size: 16px; text-align: left; transition: all 0.2s; }
-    .ans-btn:hover { border-color: #d6d9e0; }
-    .ans-btn.active { border-color: var(--primary); background: #f3f0ff; color: var(--primary); font-weight: bold; }
-    
-    .admin-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; }
-    .admin-item:hover { background: #f8f9fa; }
-    
-    .loading { color: #999; padding: 20px; text-align: center; }
-
-    @media print {
-      .btn-action { display: none !important; }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      padding: 16px;
+      max-width: 900px;
+      margin: auto;
+      background-color: #f7fbff;
+    }
+    h2 { color: #0050a0; text-align: center; }
+    .warning {
+      background-color: #ffdddd;
+      color: #a00;
+      padding: 12px;
+      border: 1px solid #a00;
+      border-radius: 5px;
+      margin: 10px 0;
+      display: none;
+    }
+    .question {
+      margin-bottom: 24px;
+      padding: 12px;
+      border-bottom: 1px solid #ccc;
+      font-size: 18px;
+    }
+    .btn-choice {
+      display: inline-block;
+      margin-right: 10px;
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #f0f0f0;
+      border: 1px solid #bbb;
+      border-radius: 6px;
+      cursor: pointer;
+      color: black;
+    }
+    .btn-choice.selected {
+      background-color: #007BFF;
+      color: white;
+      border-color: #007BFF;
+    }
+    input[type="text"] {
+      font-size: 18px;
+      padding: 10px;
+      width: 60%;
+      max-width: 300px;
+      margin-right: 10px;
+    }
+    button {
+      font-size: 18px;
+      padding: 10px 20px;
+      background-color: #2d7ff9;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover { background-color: #115fd3; }
+    .btn-submit {
+      display: block;
+      width: 100%;
+      font-size: 20px;
+      padding: 16px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      margin: 30px 0 10px;
+    }
+    .btn-submit:hover { background-color: #218838; }
+    .confirm-box {
+      background: #fff8e1;
+      border: 1px solid #ffc107;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 12px 0;
+    }
+    .confirm-box button {
+      margin-right: 10px;
+      font-size: 16px;
+      padding: 8px 20px;
+    }
+    #spinner {
+      display: none;
+      text-align: center;
+      padding: 30px;
+      font-size: 18px;
+      color: #555;
+    }
+    @media (max-width: 600px) {
+      .btn-choice {
+        padding: 14px 18px;
+        font-size: 18px;
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+      }
+      input[type="text"] { width: 100%; margin-bottom: 10px; }
+      button { width: 100%; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div id="start-area" class="glass-card">
-      <div style="cursor:pointer; font-size:35px; margin-bottom:10px;" onclick="adminLogin()">🔮</div>
-      <h2 style="color:var(--primary); margin:0;">프리미엄 MBTI 성향 분석</h2>
-      <div class="info-box">
-        <span class="info-title">💡 성격 분석 검사란?</span>
-        성격 유형은 총 16가지이며 의사소통, 대인관계, 진로, 적성 등을 알 수 있는 정밀 테스트입니다. 그래프와 성향을 함께 제공합니다.
-        <hr style="border:0; border-top:1px solid #eee; margin:12px 0;">
-        <span class="info-title">🔍 검사 유의사항</span>
-        <div>- 본 검사는 유효한 결과를 위해 <b>66문항</b>으로 구성합니다</div>
-        <div>- 결과는 <b>3일간 보관</b>되며 이후 자동 삭제됩니다</div>
-        <div>- 기존 검사자는 <b>이름 검색</b>으로 결과를 다시 볼 수 있습니다.</div>
-      </div>
-      <input type="text" id="nameInput" placeholder="이름을 입력해주세요">
-      <button class="btn-action" onclick="startQuiz()">분석 시작 및 결과 확인</button>
-    </div>
 
-    <div id="quiz-area"></div>
-    <button id="submit-btn" class="btn-action" onclick="submit()" style="display:none; background:#2d3436; margin-top:20px;">최종 리포트 생성</button>
+  <h2>성격 분석 검사</h2>
 
-    <div id="result">
-      <div id="capture-area" class="glass-card">
-        <p id="res-user" style="color:#b2bec3; font-size:13px; margin:0;"></p>
-        <h1 class="mbti-badge" id="res-mbti"></h1>
-        <div class="alias-text" id="res-alias"></div>
-        <div style="color:var(--primary); font-size:12px; font-weight:600; margin-bottom:15px;" id="res-keywords"></div>
-        
-        <div style="width:100%; height:300px; margin: 15px auto; position:relative;">
-          <canvas id="mbtiChart"></canvas>
-        </div>
-
-        <div class="section"><span class="section-h">📖 공통점 및 요약</span><div id="res-desc" style="font-size:13px; line-height:1.6;"></div></div>
-        
-        <div class="section" style="background:#fff9db; border-color:#fab005;"><span class="section-h" style="color:#f08c00;">📜 속담 및 격언</span><div id="res-quote" style="font-size:13px; font-style:italic;"></div></div>
-
-        <div class="grid-box">
-          <div class="mini-card"><b>💪 장점</b><span id="res-pros"></span></div>
-          <div class="mini-card"><b>⚠️ 단점</b><span id="res-cons"></span></div>
-          <div class="mini-card"><b>🤫 싫어하는 말</b><span id="res-hate"></span></div>
-          <div class="mini-card"><b>📢 자주 듣는 말</b><span id="res-often"></span></div>
-        </div>
-
-        <div class="section" style="background:#f1f3ff;"><span class="section-h">🗣️ 소통 및 리더십 스타일</span>
-          <p style="font-size:12px; margin:5px 0;"><b>• 의사소통:</b> <span id="res-comm"></span></p>
-          <p style="font-size:12px; margin:5px 0;"><b>• 리더십:</b> <span id="res-lead"></span></p>
-          <p style="font-size:12px; margin:5px 0;"><b>• 인간관계:</b> <span id="res-rel"></span></p>
-        </div>
-
-        <div class="section" style="background:#fff0f6;"><span class="section-h" style="color:#d6336c;">⚡ 스트레스 및 성장</span>
-          <p style="font-size:12px; margin:5px 0;"><b>• 스트레스 반응:</b> <span id="res-stress"></span></p>
-          <p style="font-size:12px; margin:5px 0;"><b>• 성장 전략:</b> <span id="res-growth"></span></p>
-        </div>
-
-        <div class="section" style="background:#e7f5ff; border-color:#228be6;"><span class="section-h" style="color:#228be6;">💼 추천 진로 및 직업</span><div id="res-jobs" style="font-size:13px; font-weight:bold;"></div></div>
-      </div>
-      <button id="back-to-admin" class="btn-action" onclick="goBackToAdmin()" style="display:none; background:#636e72; margin-top:10px;">관리자 목록으로</button>
-      <button class="btn-action" onclick="downloadImg()" style="background:#00b894; margin-top:10px;">💾 이미지 저장</button>
-    </div>
-
-    <div id="admin-panel" class="glass-card">
-        <h3 style="color:var(--primary); margin-top:0;">📊 관리자 모드</h3>
-        <p style="font-size:13px; color:#636e72;">이름을 클릭하면 결과를 확인할 수 있습니다.</p>
-        <div id="admin-list" style="max-height:400px; overflow-y:auto;"></div>
-        <button class="btn-action" onclick="location.reload()" style="margin-top:15px; background:#636e72;">메인 화면으로</button>
-    </div>
+  <!-- 검사 설명 박스 -->
+  <div style="background-color:#f0f8ff; border-left:6px solid #007BFF; padding:16px; margin-bottom:20px; border-radius:8px;">
+    <strong style="font-size:18px; color:#0050a0;">💡 성격 분석 검사란?</strong><br>
+    성격테스트 결과로 알 수 있는 성격 유형은 총 16가지이며<br>
+    의사소통, 대인관계, 성격부터 진로, 적성 등을 알 수 있는 성격 테스트입니다.<br>
+    결과는 <strong style="color:#0050a0;">막대그래프</strong>로 시각화됩니다.
   </div>
 
-  <script type="module">
-    // ✅ Firebase v9+ 모듈형 SDK (최신 버전)
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, addDoc, query, where, orderBy, deleteDoc, doc, Timestamp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
+  <!-- 유의사항 박스 -->
+  <div style="background-color:#f8f9fa; border-left:6px solid #6c757d; padding:16px; margin-bottom:30px; border-radius:8px;">
+    <strong style="font-size:16px; color:#333;">🔍 검사 유의사항</strong><br>
+    - 본 검사는 유효한 결과를 위해 <strong>66문항</strong>으로 구성합니다<br>
+    - 결과는 <strong>3일간 보관</strong>되며 자동 삭제됩니다<br>
+    - 기존 검사자는 <strong>이름 검색</strong>으로 결과 확인 가능합니다.
+  </div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyABtOy0Gwt3arVgux2DbKQgsRfCGKSN8Rw",
-      authDomain: "mbti-project-cb2a0.firebaseapp.com",
-      projectId: "mbti-project-cb2a0",
-      storageBucket: "mbti-project-cb2a0.firebasestorage.app",
-      messagingSenderId: "146486130928",
-      appId: "1:146486130928:web:bac3b2d2c0b229d2222a35"
-    };
+  <!-- 경고 메시지 -->
+  <div id="searchWarningBox" class="warning"><span id="searchWarningText"></span></div>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    
-    let questions = [], answers = {}, currentChart = null;
+  <!-- 이름 입력 + 검색 -->
+  <p>
+    이름: <input type="text" id="nameInput" placeholder="이름을 입력하세요" autocomplete="off">
+    <button onclick="searchPrevious()">검색</button>
+  </p>
 
-    console.log("🔥 Firebase 초기화 완료");
+  <!-- 검색 결과 -->
+  <div id="searchResponse"></div>
 
-    // ==========================================
-    // 관리자 로그인
-    // ==========================================
-    window.adminLogin = async () => {
-      const pw = prompt("관리자 비밀번호를 입력하세요");
-      if (pw !== "6128") {
-        if (pw !== null) alert("비밀번호가 틀렸습니다.");
-        return;
+  <!-- 로딩 스피너 -->
+  <div id="spinner">⏳ 잠시만 기다려 주세요...</div>
+
+  <!-- 문항 폼 -->
+  <form id="mbtiForm"></form>
+
+  <!-- 미응답 경고 -->
+  <div class="warning" id="answerWarningBox">
+    <span id="answerWarningText"></span>
+  </div>
+
+  <!-- 결과 보기 버튼 -->
+  <button id="submitBtn" class="btn-submit" onclick="submitAnswers()">결과 보기</button>
+
+  <!-- 결과 출력 영역 -->
+  <div id="resultSection" style="display:none;">
+    <h3 id="mbtiTitle"></h3>
+    <h4 id="mbtiSubtitle"></h4>
+    <div id="resultTable"></div>
+    <br>
+    <canvas id="mbtiChart" width="400" height="300"></canvas>
+    <br><br>
+    <button onclick="location.reload()">🔁 나가기</button>
+  </div>
+
+<script>
+  // ✅ Firebase Cloud Functions 베이스 URL — 배포 후 실제 프로젝트 URL로 교체
+  const FN = "https://us-central1-YOUR_PROJECT_ID.cloudfunctions.net";
+
+  let questionData = [], answers = {}, currentUserName = "", lastSearchResult = null;
+  let chartInstance = null;
+
+  // ── 공통 API 호출 래퍼 ──────────────────────────────────────────────────────
+  async function api(endpoint, body) {
+    const res = await fetch(`${FN}/${endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "서버 오류");
+    return data;
+  }
+
+  // ── 경고 메시지 ─────────────────────────────────────────────────────────────
+  function showWarning(msg) {
+    const box = document.getElementById("searchWarningBox");
+    document.getElementById("searchWarningText").textContent = msg;
+    box.style.display = "block";
+    setTimeout(() => box.style.display = "none", 4000);
+  }
+
+  function setSpinner(on) {
+    document.getElementById("spinner").style.display = on ? "block" : "none";
+    document.getElementById("mbtiForm").style.display = on ? "none" : "block";
+    document.getElementById("submitBtn").style.display = on ? "none" : "block";
+  }
+
+  // ── 페이지 로드 시 문항 불러오기 ────────────────────────────────────────────
+  window.onload = async () => {
+    setSpinner(true);
+    try {
+      const { questions } = await api("getQuestions", {});
+      renderQuestions(questions);
+    } catch (e) {
+      alert("문항 로드 실패: " + e.message);
+    } finally {
+      setSpinner(false);
+    }
+  };
+
+  // ── 문항 렌더링 ─────────────────────────────────────────────────────────────
+  function renderQuestions(data) {
+    questionData = data;
+    const form = document.getElementById("mbtiForm");
+    form.innerHTML = "";
+    data.forEach((q, i) => {
+      const div = document.createElement("div");
+      div.className = "question";
+      div.innerHTML = `
+        <p>${i + 1}. ${q.text}</p>
+        <button type="button" class="btn-choice" onclick="selectAnswer('${q.id}','${q.code1}',this)">${q.a}</button>
+        <button type="button" class="btn-choice" onclick="selectAnswer('${q.id}','${q.code2}',this)">${q.b}</button>
+      `;
+      form.appendChild(div);
+    });
+  }
+
+  // ── 선택 기록 ───────────────────────────────────────────────────────────────
+  function selectAnswer(qid, code, btn) {
+    answers[qid] = code;
+    btn.parentElement.querySelectorAll(".btn-choice").forEach(b => b.classList.remove("selected"));
+    btn.classList.add("selected");
+  }
+
+  // ── 이름 검색 (기존 결과 조회) ──────────────────────────────────────────────
+  async function searchPrevious() {
+    const name = document.getElementById("nameInput").value.trim();
+    if (!name) return showWarning("이름을 입력해주세요.");
+    currentUserName = name;
+
+    const box = document.getElementById("searchResponse");
+    box.innerHTML = "<p style='color:#888;'>🔍 검색 중...</p>";
+    try {
+      const data = await api("loadPreviousResult", { name });
+      lastSearchResult = data.found ? data.result : null;
+
+      if (data.found) {
+        box.innerHTML = `
+          <div class='confirm-box'>
+            이전에 검사를 했습니다. 결과를 보시겠습니까?<br><br>
+            <button onclick='confirmLoad(true)'>예</button>
+            <button onclick='confirmLoad(false)' style='background:#6c757d;'>아니오</button>
+          </div>`;
+      } else {
+        box.innerHTML = `
+          <div class='confirm-box'>
+            검사를 진행하시겠습니까?<br><br>
+            <button onclick='confirmLoad(true, true)'>예</button>
+            <button onclick='confirmLoad(false)' style='background:#6c757d;'>아니오</button>
+          </div>`;
       }
-      
-      console.log("✅ 관리자 모드 진입");
-      document.getElementById("start-area").style.display = "none";
-      document.getElementById("admin-panel").style.display = "block";
-      await refreshAdminList();
-    };
+    } catch (e) {
+      box.innerHTML = `<p style='color:red;'>오류: ${e.message}</p>`;
+    }
+  }
 
-    // ==========================================
-    // 관리자 리스트 새로고침 (3일 지난 데이터 자동 삭제)
-    // ==========================================
-    async function refreshAdminList() {
-      try {
-        const list = document.getElementById("admin-list");
-        list.innerHTML = '<div class="loading">로딩 중...</div>';
-        
-        const q = query(collection(db, "results"), orderBy("date", "desc"));
-        const snap = await getDocs(q);
-        
-        // ✅ 3일 경과 데이터 자동 삭제
-        const expiry = new Date();
-        expiry.setDate(expiry.getDate() - 3);
-        
-        list.innerHTML = "";
-        let validCount = 0;
-        
-        for (const dSnap of snap.docs) {
-          const d = dSnap.data();
-          const id = dSnap.id;
-          
-          // 날짜 타입 체크 및 변환
-          let docDate;
-          if (d.date && d.date.toDate) {
-            docDate = d.date.toDate(); // Firestore Timestamp
-          } else if (d.date instanceof Date) {
-            docDate = d.date;
-          } else {
-            docDate = new Date(d.date); // 문자열 등
-          }
-          
-          // 3일 지난 기록 삭제
-          if (docDate < expiry) {
-            console.log(`🗑️ 오래된 기록 삭제: ${d.name} (${docDate.toLocaleDateString()})`);
-            await deleteDoc(doc(db, "results", id));
-            continue;
-          }
-          
-          validCount++;
-          const div = document.createElement("div");
-          div.className = "admin-item";
-          div.innerHTML = `
-            <div onclick="viewResult('${id}')" style="flex-grow:1; cursor:pointer;">
-              <b>${d.name}</b> [${d.mbti || 'N/A'}]
-              <br><small style="color:#999;">${docDate.toLocaleDateString()} ${docDate.toLocaleTimeString()}</small>
-            </div>
-            <button 
-              style="color:white; background:#ff7675; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:bold;" 
-              onclick="deleteUser('${id}')">
-              삭제
-            </button>
-          `;
-          list.appendChild(div);
-        }
-        
-        if (validCount === 0) {
-          list.innerHTML = '<div class="loading">저장된 결과가 없습니다.</div>';
-        }
-        
-        console.log(`✅ 총 ${validCount}개 결과 로드 완료`);
-        
-      } catch(e) {
-        console.error("❌ 관리자 리스트 로드 실패:", e);
-        document.getElementById("admin-list").innerHTML = '<div class="loading" style="color:red;">로드 실패</div>';
-      }
+  function confirmLoad(ok, isNew = false) {
+    if (ok && lastSearchResult) {
+      document.getElementById("searchResponse").innerHTML = "";
+      renderResult(lastSearchResult);
+    } else if (ok && isNew) {
+      document.getElementById("searchResponse").innerHTML = "";
+    } else {
+      location.reload();
+    }
+  }
+
+  // ── 결과 저장 + 출력 ────────────────────────────────────────────────────────
+  async function submitAnswers() {
+    const name = document.getElementById("nameInput").value.trim();
+    if (!name) return showWarning("이름을 입력해주세요.");
+    currentUserName = name;
+
+    // 미응답 체크
+    const unanswered = questionData.filter(q => !answers[q.id]);
+    if (unanswered.length) {
+      const missing = unanswered.map(q => q.id).join(", ");
+      document.getElementById("answerWarningBox").style.display = "block";
+      document.getElementById("answerWarningText").innerText =
+        `다음 문항이 입력되지 않았습니다: ${missing}. 문항을 모두 입력해야 결과를 확인할 수 있습니다.`;
+      return;
+    }
+    document.getElementById("answerWarningBox").style.display = "none";
+
+    const submitBtn = document.getElementById("submitBtn");
+    submitBtn.disabled = true;
+    submitBtn.textContent = "저장 중...";
+
+    try {
+      const desc = await api("saveAnswers", { name, answers });
+      renderResult(desc);
+      setTimeout(() => document.getElementById("resultSection").scrollIntoView({ behavior: "smooth" }), 300);
+    } catch (e) {
+      alert("오류: " + e.message);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "결과 보기";
+    }
+  }
+
+  // ── 결과 렌더링 ─────────────────────────────────────────────────────────────
+  function renderResult(desc) {
+    if (!desc || !desc["MBTI 유형"]) {
+      alert("결과 데이터를 불러올 수 없습니다.");
+      return;
     }
 
-    // ==========================================
-    // 특정 결과 보기
-    // ==========================================
-    window.viewResult = async (id) => {
-      console.log(`📊 결과 조회: ${id}`);
-      
-      try {
-        const snap = await getDocs(collection(db, "results"));
-        let found = false;
-        
-        snap.forEach(dSnap => {
-          if (dSnap.id === id) {
-            const d = dSnap.data();
-            document.getElementById("back-to-admin").style.display = "block";
-            showResult(d.mbti, d.scores, d.name);
-            found = true;
-          }
-        });
-        
-        if (!found) {
-          alert("결과를 찾을 수 없습니다.");
-        }
-      } catch(e) {
-        console.error("❌ 결과 조회 실패:", e);
-        alert("결과 조회 중 오류가 발생했습니다.");
-      }
-    };
+    document.getElementById("resultSection").style.display = "block";
+    document.getElementById("mbtiTitle").innerHTML =
+      `당신의 성격 분석 유형: <span style='color:#007BFF'>${getCustomMbtiName(desc["MBTI 유형"])}</span>`;
+    document.getElementById("mbtiSubtitle").innerHTML =
+      `"${desc["별칭(일반적 특징)"]}" – <em>${desc["키워드"]}</em>`;
 
-    // ==========================================
-    // 사용자 삭제
-    // ==========================================
-    window.deleteUser = async (id) => {
-      if (!confirm("이 결과를 삭제하시겠습니까?")) return;
-      
-      try {
-        await deleteDoc(doc(db, "results", id));
-        console.log(`✅ 삭제 완료: ${id}`);
-        alert("삭제되었습니다.");
-        await refreshAdminList();
-      } catch(e) {
-        console.error("❌ 삭제 실패:", e);
-        alert("삭제 중 오류가 발생했습니다.");
-      }
-    };
+    const fields = [
+      "공통점", "속담/격언", "싫어하는 말", "자주 듣는 말",
+      "장점", "단점", "의사소통 스타일", "리더십 스타일",
+      "진로 및 직업 추천", "인간관계 스타일", "스트레스 반응", "성장 전략"
+    ];
+    let table = "<table style='width:100%; border-collapse:collapse; border:1px solid #ccc;'>";
+    fields.forEach(k => {
+      table += `
+        <tr>
+          <th style="width:22%; padding:10px; text-align:center; vertical-align:top; background:#f0f8ff; border:1px solid #ccc;">${k}</th>
+          <td style="padding:10px; text-align:left; border:1px solid #ccc;">${desc[k] || "-"}</td>
+        </tr>`;
+    });
+    table += "</table>";
+    document.getElementById("resultTable").innerHTML = table;
 
-    // ==========================================
-    // 관리자 모드로 돌아가기
-    // ==========================================
-    window.goBackToAdmin = () => {
-      document.getElementById("result").style.display = "none";
-      document.getElementById("admin-panel").style.display = "block";
-      document.getElementById("back-to-admin").style.display = "none";
-    };
+    drawChart(desc);
+    setTimeout(() => document.getElementById("resultSection").scrollIntoView({ behavior: "smooth" }), 300);
+  }
 
-    // ==========================================
-    // 퀴즈 시작
-    // ==========================================
-    window.startQuiz = async () => {
-      const name = document.getElementById("nameInput").value.trim();
-      if (!name) {
-        alert("이름을 입력해주세요!");
-        return;
-      }
-      
-      console.log(`🎯 ${name}님 검사 시작`);
-      
-      try {
-        // 기존 결과 확인
-        const rSnap = await getDocs(collection(db, "results"));
-        let existingResult = null;
-        
-        rSnap.forEach(d => {
-          if (d.data().name === name) {
-            existingResult = d.data();
-          }
-        });
-        
-        // 기존 결과가 있으면 확인 후 표시
-        if (existingResult && existingResult.scores) {
-          if (confirm(`${name}님의 기존 결과가 있습니다. 바로 보시겠습니까?\n(취소 시 새로 검사합니다)`)) {
-            showResult(existingResult.mbti, existingResult.scores, name);
-            return;
-          }
-        }
-        
-        // 질문 로드
-        const qSnap = await getDocs(collection(db, "questions"));
-        questions = [];
-        qSnap.forEach(d => {
-          questions.push({ id: d.id, ...d.data() });
-        });
-        
-        // ID 기준 정렬 (숫자 순서대로)
-        questions.sort((a, b) => {
-          return a.id.localeCompare(b.id, undefined, { numeric: true });
-        });
-        
-        console.log(`✅ ${questions.length}개 문항 로드 완료`);
-        
-        // 퀴즈 화면 생성
-        const area = document.getElementById("quiz-area");
-        area.innerHTML = "";
-        
-        questions.forEach((q, i) => {
-          area.innerHTML += `
-            <div class="glass-card" style="text-align:left;">
-              <b>Q${i + 1}.</b> ${q.text}
-              <br>
-              <button class="ans-btn" onclick="sel('${q.id}','${q.code1}',this)">${q.a}</button>
-              <button class="ans-btn" onclick="sel('${q.id}','${q.code2}',this)">${q.b}</button>
-            </div>
-          `;
-        });
-        
-        document.getElementById("start-area").style.display = "none";
-        area.style.display = "block";
-        document.getElementById("submit-btn").style.display = "block";
-        window.scrollTo(0, 0);
-        
-      } catch(e) {
-        console.error("❌ 퀴즈 시작 실패:", e);
-        alert("검사를 시작할 수 없습니다. 잠시 후 다시 시도해주세요.");
-      }
-    };
-
-    // ==========================================
-    // 답변 선택
-    // ==========================================
-    window.sel = (id, code, button) => {
-      answers[id] = code;
-      button.parentElement.querySelectorAll(".ans-btn").forEach(btn => {
-        btn.classList.remove("active");
-      });
-      button.classList.add("active");
-      console.log(`선택: ${id} -> ${code}`);
-    };
-
-    // ==========================================
-    // 제출
-    // ==========================================
-    window.submit = async () => {
-      if (Object.keys(answers).length < questions.length) {
-        alert(`모든 문항에 답변해주세요!\n(현재 ${Object.keys(answers).length}/${questions.length})`);
-        return;
-      }
-      
-      console.log("📝 답변 제출 중...");
-      
-      try {
-        // 점수 계산
-        let scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
-        Object.values(answers).forEach(code => {
-          scores[code]++;
-        });
-        
-        // MBTI 유형 결정
-        const mbti = 
-          (scores.E >= scores.I ? "E" : "I") +
-          (scores.S >= scores.N ? "S" : "N") +
-          (scores.T >= scores.F ? "T" : "F") +
-          (scores.J >= scores.P ? "J" : "P");
-        
-        console.log(`✅ MBTI 결과: ${mbti}`, scores);
-        
-        // Firestore에 저장 (Timestamp 사용)
-        await addDoc(collection(db, "results"), {
-          name: document.getElementById("nameInput").value.trim(),
-          mbti: mbti,
-          scores: scores,
-          date: Timestamp.now() // ✅ Firestore Timestamp 사용
-        });
-        
-        console.log("✅ 결과 저장 완료");
-        
-        // 결과 표시
-        showResult(mbti, scores, document.getElementById("nameInput").value.trim());
-        
-      } catch(e) {
-        console.error("❌ 제출 실패:", e);
-        alert("결과 저장 중 오류가 발생했습니다.");
-      }
-    };
-
-    // ==========================================
-    // 결과 표시
-    // ==========================================
-    async function showResult(mbti, scores, name) {
-      console.log(`📊 결과 표시: ${mbti} (${name})`);
-      
-      try {
-        // MBTI 정보 가져오기
-        const iSnap = await getDocs(collection(db, "mbti_infos"));
-        let info = {};
-        
-        iSnap.forEach(d => {
-          if (d.id === mbti) {
-            info = d.data();
-          }
-        });
-        
-        // 화면 전환
-        document.getElementById("start-area").style.display = "none";
-        document.getElementById("admin-panel").style.display = "none";
-        document.getElementById("quiz-area").style.display = "none";
-        document.getElementById("submit-btn").style.display = "none";
-        document.getElementById("result").style.display = "block";
-        
-        // 결과 데이터 표시
-        document.getElementById("res-user").innerText = `${name}님의 분석 리포트`;
-        document.getElementById("res-mbti").innerText = mbti;
-        document.getElementById("res-keywords").innerText = info["키워드"] || "";
-        document.getElementById("res-alias").innerText = info["별칭(일반적 특징)"] || "";
-        document.getElementById("res-desc").innerHTML = info["공통점"] || "";
-        document.getElementById("res-quote").innerText = info["속담/격언"] || "";
-        document.getElementById("res-pros").innerText = info["장점"] || "";
-        document.getElementById("res-cons").innerText = info["단점"] || "";
-        document.getElementById("res-hate").innerText = info["싫어하는 말"] || "";
-        document.getElementById("res-often").innerText = info["자주 듣는 말"] || "";
-        document.getElementById("res-comm").innerText = info["의사소통 스타일"] || "";
-        document.getElementById("res-lead").innerText = info["리더십 스타일"] || "";
-        document.getElementById("res-rel").innerText = info["인간관계 스타일"] || "";
-        document.getElementById("res-stress").innerText = info["스트레스 반응"] || "";
-        document.getElementById("res-growth").innerText = info["성장 전략"] || "";
-        document.getElementById("res-jobs").innerText = info["진로 및 직업 추천"] || "";
-        
-        // 차트 그리기 (약간의 지연 후)
-        setTimeout(() => drawChart(scores), 500);
-        window.scrollTo(0, 0);
-        
-        console.log("✅ 결과 표시 완료");
-        
-      } catch(e) {
-        console.error("❌ 결과 표시 실패:", e);
-        alert("결과를 표시하는 중 오류가 발생했습니다.");
-      }
-    }
-
-    // ==========================================
-    // 차트 그리기
-    // ==========================================
-    function drawChart(scores) {
-      if (currentChart) {
-        currentChart.destroy();
-      }
-      
-      const ctx = document.getElementById('mbtiChart').getContext('2d');
-      
-      // 백분율 계산
-      const ePercent = (scores.E / (scores.E + scores.I)) * 100;
-      const sPercent = (scores.S / (scores.S + scores.N)) * 100;
-      const tPercent = (scores.T / (scores.T + scores.F)) * 100;
-      const jPercent = (scores.J / (scores.J + scores.P)) * 100;
-      
-      currentChart = new Chart(ctx, {
-        type: 'radar',
-        data: {
-          labels: [
-            `외향 ${ePercent.toFixed(0)}% / 내향 ${(100 - ePercent).toFixed(0)}%`,
-            `감각 ${sPercent.toFixed(0)}% / 직관 ${(100 - sPercent).toFixed(0)}%`,
-            `사고 ${tPercent.toFixed(0)}% / 감정 ${(100 - tPercent).toFixed(0)}%`,
-            `판단 ${jPercent.toFixed(0)}% / 인식 ${(100 - jPercent).toFixed(0)}%`
-          ],
-          datasets: [{
-            label: '성향 분석',
-            data: [ePercent, sPercent, tPercent, jPercent],
-            backgroundColor: 'rgba(108, 92, 231, 0.2)',
-            borderColor: '#6c5ce7',
-            borderWidth: 3,
-            pointBackgroundColor: '#6c5ce7',
-            pointBorderColor: '#fff',
-            pointBorderWidth: 2,
-            pointRadius: 5
-          }]
+  // ── 막대그래프 ──────────────────────────────────────────────────────────────
+  function drawChart(desc) {
+    if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+    const ctx = document.getElementById("mbtiChart").getContext("2d");
+    chartInstance = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["사회적/내적 에너지 (E-I)", "현실/직관 정보처리 (S-N)", "논리/감성 의사결정 (T-F)", "계획/즉흥 생활방식 (J-P)"],
+        datasets: [
+          { label: "첫 글자 (E/S/T/J)", data: [desc.E, desc.S, desc.T, desc.J], backgroundColor: "#007BFF" },
+          { label: "두 번째 글자 (I/N/F/P)", data: [desc.I, desc.N, desc.F, desc.P], backgroundColor: "#f39c12" }
+        ]
+      },
+      options: {
+        plugins: {
+          legend: { position: "top" },
+          title: { display: true, text: "성격분석 축별 점수 비교" }
         },
-        options: {
-          scales: {
-            r: {
-              min: 0,
-              max: 100,
-              ticks: {
-                display: false
-              },
-              pointLabels: {
-                font: {
-                  size: 11,
-                  weight: 'bold'
-                }
-              }
-            }
-          },
-          plugins: {
-            legend: {
-              display: false
-            }
-          }
-        }
-      });
-      
-      console.log("✅ 차트 생성 완료");
-    }
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  }
 
-    // ==========================================
-    // 이미지 다운로드
-    // ==========================================
-    window.downloadImg = () => {
-      console.log("💾 이미지 저장 시작...");
-      
-      html2canvas(document.getElementById("capture-area"), {
-        scale: 2, // 고해상도
-        backgroundColor: '#ffffff'
-      }).then(canvas => {
-        const link = document.createElement("a");
-        link.href = canvas.toDataURL("image/png");
-        link.download = `MBTI_Result_${document.getElementById("res-mbti").innerText}_${new Date().getTime()}.png`;
-        link.click();
-        console.log("✅ 이미지 저장 완료");
-      }).catch(e => {
-        console.error("❌ 이미지 저장 실패:", e);
-        alert("이미지 저장 중 오류가 발생했습니다.");
-      });
+  // ── MBTI 유형 이름 풀어쓰기 ─────────────────────────────────────────────────
+  function getCustomMbtiName(type) {
+    const typeNames = {
+      "INFJ": "INFJ, 창의적 통찰형", "INFP": "INFP, 자유로운 사색형",
+      "ENFJ": "ENFJ, 영감을 주는 리더형", "ENFP": "ENFP, 열정적인 탐험형",
+      "INTJ": "INTJ, 분석적 전략형", "INTP": "INTP, 논리적 혁신형",
+      "ENTJ": "ENTJ, 결단력 있는 혁신형", "ENTP": "ENTP, 창의적 개척형",
+      "ISFJ": "ISFJ, 보호적인 돌봄형", "ISFP": "ISFP, 감성적 표현형",
+      "ESFJ": "ESFJ, 사교적인 조화형", "ESFP": "ESFP, 자유로운 즐거움형",
+      "ISTJ": "ISTJ, 책임감 있는 현실형", "ISTP": "ISTP, 실용적인 해결형",
+      "ESTJ": "ESTJ, 체계적인 지휘형", "ESTP": "ESTP, 모험적인 실용형"
     };
-  </script>
+    return typeNames[type] || type;
+  }
+</script>
 </body>
 </html>
