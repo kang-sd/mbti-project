@@ -1,144 +1,125 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AXIA · 가치관 분석</title>
+  <title>PSYCHE · 성격 분석</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+KR:wght@300;400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --bg:      #f9f6f1;
+      --bg:      #faf8f4;
       --surface: #ffffff;
-      --ink:     #1c1712;
-      --ink2:    #4e4840;
-      --teal:    #2e7d6e;
-      --teal2:   #4aad98;
-      --teal-bg: #eef8f6;
-      --border:  #e4ddd4;
-      --accent:  #1a5c52;
+      --ink:     #1a1612;
+      --ink2:    #4a4540;
+      --gold:    #b8903a;
+      --gold2:   #d4aa5a;
+      --gold-bg: #fdf6e9;
+      --border:  #e8e2d8;
+      --accent:  #8b6914;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: var(--bg); color: var(--ink); font-family: 'Noto Serif KR', serif; min-height: 100vh; }
 
-    .top-bar { height: 4px; background: linear-gradient(90deg, var(--teal), var(--teal2), var(--teal)); }
+    .top-bar { height: 4px; background: linear-gradient(90deg, var(--gold), var(--gold2), var(--gold)); }
     .container { max-width: 780px; margin: 0 auto; padding: 0 24px 80px; }
 
     /* 헤더 */
     .header { text-align: center; padding: 52px 0 44px; animation: fadeDown 0.8s ease both; }
-    .header-eyebrow { font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--teal); margin-bottom: 18px; }
+    .header-eyebrow { font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; }
     .header h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(48px, 10vw, 84px); font-weight: 300; font-style: italic; color: var(--ink); line-height: 0.95; letter-spacing: -2px; }
-    .header h1 span { color: var(--teal); }
-    .header-rule { width: 50px; height: 1px; background: linear-gradient(90deg, transparent, var(--teal), transparent); margin: 22px auto 18px; }
+    .header h1 span { color: var(--gold); }
+    .header-rule { width: 50px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 22px auto 18px; }
     .header-sub { font-size: 13px; color: var(--ink2); }
 
     /* 안내 카드 */
     .intro-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 44px; animation: fadeUp 0.8s 0.2s ease both; }
     .intro-card { background: var(--surface); padding: 24px 18px; text-align: center; }
-    .intro-card-num { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 300; color: var(--teal); line-height: 1; margin-bottom: 6px; }
-    .intro-card-title { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--teal); margin-bottom: 8px; }
+    .intro-card-num { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 300; color: var(--gold); line-height: 1; margin-bottom: 6px; }
+    .intro-card-title { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
     .intro-card p { font-size: 12px; color: var(--ink2); line-height: 1.6; }
 
     /* 이름 입력 */
     .name-section { margin-bottom: 36px; animation: fadeUp 0.8s 0.3s ease both; }
-    .section-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--teal); margin-bottom: 10px; }
+    .section-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
     .name-row { display: flex; gap: 10px; }
     .name-input { flex: 1; background: var(--surface); border: 1px solid var(--border); color: var(--ink); font-family: 'Noto Serif KR', serif; font-size: 16px; padding: 14px 18px; outline: none; transition: border-color 0.25s; }
-    .name-input:focus { border-color: var(--teal); }
+    .name-input:focus { border-color: var(--gold); }
     .name-input::placeholder { color: #bbb; }
-    .btn-search { background: var(--surface); border: 1px solid var(--teal); color: var(--teal); font-family: 'Cormorant Garamond', serif; font-size: 15px; letter-spacing: 2px; padding: 14px 26px; cursor: pointer; transition: all 0.25s; white-space: nowrap; }
-    .btn-search:hover { background: var(--teal); color: #fff; }
+    .btn-search { background: var(--surface); border: 1px solid var(--gold); color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 15px; letter-spacing: 2px; padding: 14px 26px; cursor: pointer; transition: all 0.25s; white-space: nowrap; }
+    .btn-search:hover { background: var(--gold); color: #fff; }
 
     /* 확인 다이얼로그 */
-    .confirm-box { background: var(--teal-bg); border: 1px solid rgba(46,125,110,0.3); padding: 22px 24px; margin-bottom: 28px; animation: fadeUp 0.3s ease; }
+    .confirm-box { background: var(--gold-bg); border: 1px solid rgba(184,144,58,0.3); padding: 22px 24px; margin-bottom: 28px; animation: fadeUp 0.3s ease; }
     .confirm-box p { font-size: 15px; color: var(--ink); margin-bottom: 16px; line-height: 1.7; }
     .confirm-btns { display: flex; gap: 10px; }
-    .btn-yes { background: var(--teal); border: none; color: #fff; font-family: 'Noto Serif KR', serif; font-size: 14px; padding: 11px 26px; cursor: pointer; transition: opacity 0.2s; }
+    .btn-yes { background: var(--gold); border: none; color: #fff; font-family: 'Noto Serif KR', serif; font-size: 14px; padding: 11px 26px; cursor: pointer; transition: opacity 0.2s; }
     .btn-yes:hover { opacity: 0.85; }
-    .btn-no  { background: transparent; border: 1px solid var(--border); color: var(--ink2); font-family: 'Noto Serif KR', serif; font-size: 14px; padding: 11px 26px; cursor: pointer; transition: all 0.2s; }
+    .btn-no { background: transparent; border: 1px solid var(--border); color: var(--ink2); font-family: 'Noto Serif KR', serif; font-size: 14px; padding: 11px 26px; cursor: pointer; transition: all 0.2s; }
     .btn-no:hover { border-color: var(--ink2); color: var(--ink); }
 
     /* 진행 바 */
     .progress-wrap { position: sticky; top: 0; z-index: 10; background: var(--bg); padding: 10px 0 14px; border-bottom: 1px solid var(--border); margin-bottom: 8px; display: none; }
     .progress-bar-bg { height: 2px; background: var(--border); position: relative; }
-    .progress-bar-fill { position: absolute; inset: 0; background: linear-gradient(90deg, var(--teal), var(--teal2)); transform-origin: left; transform: scaleX(0); transition: transform 0.3s ease; }
+    .progress-bar-fill { position: absolute; inset: 0; background: linear-gradient(90deg, var(--gold), var(--gold2)); transform-origin: left; transform: scaleX(0); transition: transform 0.3s ease; }
     .progress-text { font-size: 11px; letter-spacing: 1px; color: var(--ink2); text-align: right; margin-top: 6px; }
 
     /* 문항 구분선 */
     .questions-header { display: none; align-items: center; gap: 18px; margin-bottom: 8px; }
     .questions-header-line { flex: 1; height: 1px; background: var(--border); }
-    .questions-header-text { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--teal); }
+    .questions-header-text { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); }
 
     /* 문항 */
-    #valuesForm { animation: fadeUp 0.8s 0.4s ease both; }
+    #mbtiForm { animation: fadeUp 0.8s 0.4s ease both; }
     .question { border-bottom: 1px solid var(--border); padding: 24px 0; }
     .question:last-child { border-bottom: none; }
     .q-meta { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; }
-    .q-num { font-family: 'Cormorant Garamond', serif; font-size: 13px; color: var(--teal); min-width: 28px; opacity: 0.6; }
+    .q-num { font-family: 'Cormorant Garamond', serif; font-size: 13px; color: var(--gold); min-width: 28px; opacity: 0.6; }
     .q-text { font-size: 15px; color: var(--ink); line-height: 1.65; }
     .q-choices { display: flex; gap: 10px; padding-left: 40px; flex-wrap: wrap; }
     .btn-choice { background: var(--surface); border: 1px solid var(--border); color: var(--ink2); font-family: 'Noto Serif KR', serif; font-size: 14px; padding: 11px 22px; cursor: pointer; transition: all 0.2s; }
-    .btn-choice:hover { border-color: var(--teal2); color: var(--ink); background: var(--teal-bg); }
-    .btn-choice.selected { background: var(--teal); border-color: var(--teal); color: #fff; font-weight: 600; }
+    .btn-choice:hover { border-color: var(--gold2); color: var(--ink); background: var(--gold-bg); }
+    .btn-choice.selected { background: var(--gold); border-color: var(--gold); color: #fff; font-weight: 600; }
 
     /* 경고 */
     .warning-bar { background: #fff5f5; border-left: 3px solid #e05252; color: #b83232; padding: 12px 18px; font-size: 13px; margin: 12px 0; display: none; line-height: 1.6; }
 
     /* 제출 버튼 */
     .submit-wrap { padding: 40px 0 0; text-align: center; }
-    .btn-submit { background: var(--teal); border: none; color: #fff; font-family: 'Cormorant Garamond', serif; font-size: 18px; letter-spacing: 3px; padding: 18px 60px; cursor: pointer; width: 100%; max-width: 380px; transition: background 0.25s, transform 0.15s; }
+    .btn-submit { background: var(--gold); border: none; color: #fff; font-family: 'Cormorant Garamond', serif; font-size: 18px; letter-spacing: 3px; padding: 18px 60px; cursor: pointer; width: 100%; max-width: 380px; transition: background 0.25s, transform 0.15s; }
     .btn-submit:hover { background: var(--accent); transform: translateY(-1px); }
     .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
     /* 스피너 */
     #spinner { display: none; text-align: center; padding: 60px 0; }
-    .spinner-ring { width: 44px; height: 44px; border: 2px solid var(--border); border-top-color: var(--teal); border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 14px; }
+    .spinner-ring { width: 44px; height: 44px; border: 2px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 14px; }
     .spinner-text { font-size: 12px; letter-spacing: 2px; color: var(--ink2); text-transform: uppercase; }
 
-    /* ══ 결과 섹션 ══ */
+    /* 결과 섹션 */
     #resultSection { display: none; animation: fadeUp 0.7s ease both; }
     .result-header { text-align: center; padding: 56px 0 44px; border-bottom: 1px solid var(--border); margin-bottom: 44px; }
-    .result-eyebrow { font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--teal); margin-bottom: 22px; }
-    .result-top3 { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 28px; }
-    .top3-badge { text-align: center; }
-    .top3-rank { font-family: 'Cormorant Garamond', serif; font-size: 11px; color: var(--teal); opacity: 0.7; margin-bottom: 6px; letter-spacing: 2px; }
-    .top3-name { font-family: 'Cormorant Garamond', serif; font-size: clamp(22px,5vw,36px); font-weight: 300; color: var(--ink); }
-    .top3-name.rank1 { font-size: clamp(32px,8vw,56px); color: var(--teal); font-style: italic; }
-    .top3-score { font-size: 11px; color: var(--ink2); margin-top: 4px; letter-spacing: 1px; }
-    .result-divider { width: 1px; height: 60px; background: var(--border); margin: auto 8px; }
-    .result-subtitle { font-size: 13px; color: var(--ink2); font-style: italic; line-height: 1.8; }
+    .result-eyebrow { font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); margin-bottom: 22px; }
+    .result-mbti-type { font-family: 'Cormorant Garamond', serif; font-size: clamp(64px, 16vw, 112px); font-weight: 300; color: var(--ink); line-height: 1; letter-spacing: -2px; }
+    .mbti-letter { color: var(--gold); }
+    .result-alias { font-size: 15px; color: var(--ink2); margin-top: 18px; font-style: italic; line-height: 1.6; }
+    .result-keyword { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+    .kw-tag { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); border: 1px solid rgba(184,144,58,0.4); background: var(--gold-bg); padding: 5px 14px; }
 
     /* 차트 */
     .chart-section { background: var(--surface); border: 1px solid var(--border); padding: 28px 28px 24px; margin-bottom: 40px; }
-    .chart-title { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--teal); margin-bottom: 16px; text-align: center; }
-    .chart-tabs { display: flex; margin-bottom: 20px; border: 1px solid var(--border); }
-    .chart-tab { flex: 1; padding: 9px; font-size: 12px; letter-spacing: 1px; text-align: center; cursor: pointer; font-family: 'Noto Serif KR', serif; color: var(--ink2); background: var(--surface); border: none; transition: all 0.2s; }
-    .chart-tab.active { background: var(--teal); color: #fff; }
+    .chart-title { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; text-align: center; }
 
-    /* 점수 상세 테이블 */
-    .score-table-wrap { margin-bottom: 40px; border: 1px solid var(--border); background: var(--surface); overflow: hidden; }
-    .score-table-title { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--teal); padding: 16px 20px 12px; border-bottom: 1px solid var(--border); background: var(--teal-bg); }
-    .score-row { display: grid; grid-template-columns: 110px 1fr 60px; align-items: center; gap: 16px; padding: 12px 20px; border-bottom: 1px solid var(--border); }
-    .score-row:last-child { border-bottom: none; }
-    .score-row.rank1 { background: rgba(46,125,110,0.05); }
-    .score-row.rank1 .score-type { color: var(--teal); font-weight: 600; }
-    .score-type { font-size: 14px; color: var(--ink2); }
-    .score-bar-bg { height: 4px; background: var(--border); border-radius: 2px; position: relative; overflow: hidden; }
-    .score-bar-fill { position: absolute; left: 0; top: 0; height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--teal), var(--teal2)); transition: width 1s ease; }
-    .score-val { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--ink); text-align: right; }
-    .score-val.rank1 { color: var(--teal); }
-
-    /* 결과 상세 */
+    /* 결과 테이블 */
     .result-fields { border: 1px solid var(--border); margin-bottom: 40px; background: var(--surface); }
-    .field-section-title { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--teal); padding: 16px 20px 12px; border-bottom: 1px solid var(--border); background: var(--teal-bg); }
-    .field-row { display: grid; grid-template-columns: 130px 1fr; border-bottom: 1px solid var(--border); }
+    .field-row { display: grid; grid-template-columns: 150px 1fr; border-bottom: 1px solid var(--border); }
     .field-row:last-child { border-bottom: none; }
-    .field-key { padding: 16px 16px 16px 20px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--teal); background: var(--teal-bg); border-right: 1px solid var(--border); display: flex; align-items: flex-start; padding-top: 18px; line-height: 1.6; }
-    .field-val { padding: 16px 20px; font-size: 14px; color: var(--ink2); line-height: 1.85; }
+    .field-key { padding: 18px 16px 18px 20px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); background: var(--gold-bg); border-right: 1px solid var(--border); display: flex; align-items: center; line-height: 1.5; }
+    .field-val { padding: 18px 20px; font-size: 14px; color: var(--ink2); line-height: 1.85; }
 
-    /* 버튼 */
+    /* 하단 버튼 */
     .result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-    .btn-print { background: var(--teal); border: none; color: #fff; font-family: 'Noto Serif KR', serif; font-size: 15px; padding: 16px 36px; cursor: pointer; transition: background 0.2s, transform 0.15s; display: flex; align-items: center; gap: 8px; }
+    .btn-print { background: var(--gold); border: none; color: #fff; font-family: 'Noto Serif KR', serif; font-size: 15px; padding: 16px 36px; cursor: pointer; transition: background 0.2s, transform 0.15s; display: flex; align-items: center; gap: 8px; }
     .btn-print:hover { background: var(--accent); transform: translateY(-1px); }
     .btn-restart { background: var(--surface); border: 1px solid var(--border); color: var(--ink2); font-family: 'Noto Serif KR', serif; font-size: 15px; padding: 16px 36px; cursor: pointer; transition: all 0.2s; }
     .btn-restart:hover { border-color: var(--ink); color: var(--ink); }
@@ -148,31 +129,54 @@
     @keyframes fadeUp   { from { opacity:0; transform:translateY(16px);  } to { opacity:1; transform:translateY(0); } }
     @keyframes spin     { to { transform: rotate(360deg); } }
 
-    /* 인쇄 */
+    /* ══════════ 인쇄 스타일 ══════════ */
     @media print {
-      .top-bar,.header,.intro-cards,.name-section,
-      .progress-wrap,.questions-header,#valuesForm,
-      .warning-bar,.submit-wrap,#spinner,
-      #searchResponse,#searchWarningBox,#answerWarningBox,
-      .result-actions,.chart-tabs { display: none !important; }
-      body { background:#fff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-      .container { max-width:100%; padding:0 16px; }
-      #resultSection { display:block !important; }
-      .print-only-header { display:flex !important; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:2px solid #2e7d6e; margin-bottom:0; }
-      .print-only-header .brand { font-family:'Cormorant Garamond',serif; font-size:18pt; font-style:italic; color:#2e7d6e; }
-      .print-only-header .print-date { font-size:9pt; color:#888; }
-      .score-bar-fill { -webkit-print-color-adjust:exact; }
+      /* 화면 요소 숨기기 */
+      .top-bar, .header, .intro-cards, .name-section,
+      .progress-wrap, .questions-header, #mbtiForm,
+      .warning-bar, .submit-wrap, #spinner,
+      #searchResponse, #searchWarningBox, #answerWarningBox,
+      .result-actions { display: none !important; }
+
+      body { background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .container { max-width: 100%; padding: 0 16px; }
+      #resultSection { display: block !important; }
+
+      /* 인쇄 헤더 */
+      .print-only-header {
+        display: flex !important;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0 12px;
+        border-bottom: 2px solid #b8903a;
+        margin-bottom: 0;
+      }
+      .print-only-header .brand { font-family: 'Cormorant Garamond', serif; font-size: 18pt; font-style: italic; color: #b8903a; }
+      .print-only-header .print-date { font-size: 9pt; color: #888; }
+
+      .result-header { padding: 20px 0; border-bottom: 1px solid #ddd; margin-bottom: 20px; }
+      .result-eyebrow { color: #b8903a !important; }
+      .result-mbti-type { font-size: 60pt !important; color: #1a1612 !important; }
+      .mbti-letter { color: #b8903a !important; }
+      .result-alias { color: #555 !important; }
+      .kw-tag { border-color: #b8903a !important; color: #b8903a !important; background: #fdf6e9 !important; }
+
+      .chart-section { border: 1px solid #ddd !important; padding: 16px !important; margin-bottom: 16px !important; page-break-inside: avoid; }
+      .chart-title { color: #b8903a !important; }
+
+      .result-fields { border: 1px solid #ddd !important; margin-bottom: 0 !important; page-break-inside: auto; }
+      .field-row { page-break-inside: avoid; border-bottom: 1px solid #eee !important; }
+      .field-key { background: #fdf6e9 !important; color: #b8903a !important; border-right: 1px solid #ddd !important; font-size: 8pt !important; }
+      .field-val { color: #333 !important; font-size: 10.5pt !important; }
     }
 
     /* 반응형 */
     @media (max-width: 600px) {
-      .intro-cards { grid-template-columns: repeat(2,1fr); }
-      .q-choices { padding-left:0; flex-direction:column; }
-      .btn-choice { width:100%; }
-      .field-row { grid-template-columns:1fr; }
-      .field-key { border-right:none; border-bottom:1px solid var(--border); }
-      .result-divider { display:none; }
-      .score-row { grid-template-columns: 90px 1fr 50px; gap:10px; }
+      .intro-cards { grid-template-columns: repeat(2, 1fr); }
+      .q-choices { padding-left: 0; }
+      .btn-choice { flex: 1; min-width: 110px; }
+      .field-row { grid-template-columns: 1fr; }
+      .field-key { border-right: none; border-bottom: 1px solid var(--border); }
     }
   </style>
 </head>
@@ -181,30 +185,31 @@
 <div class="top-bar"></div>
 <div class="container">
 
+  <!-- 인쇄 전용 헤더 (화면에서는 숨김) -->
   <div class="print-only-header" style="display:none;">
-    <div class="brand">Axia · 가치관분석</div>
+    <div class="brand">Psyche · 성격분석</div>
     <div class="print-date" id="printDate"></div>
   </div>
 
-  <!-- 헤더 -->
+  <!-- 메인 헤더 -->
   <div class="header">
-    <div class="header-eyebrow">직업 가치관 정밀 분석</div>
-    <h1>Ax<span>ia</span></h1>
+    <div class="header-eyebrow">Jennifer Canvas · 성격 분석</div>
+    <h1>Psy<span>che</span></h1>
     <div class="header-rule"></div>
-    <div class="header-sub">당신이 일에서 진정으로 원하는 것을 발견하다</div>
+    <div class="header-sub">당신의 내면을 비추는 16가지 성격 유형</div>
   </div>
 
   <!-- 안내 카드 -->
   <div class="intro-cards">
     <div class="intro-card">
-      <div class="intro-card-num">60</div>
+      <div class="intro-card-num">66</div>
       <div class="intro-card-title">문항 구성</div>
-      <p>정밀한 결과를 위해<br>설계된 60개 문항</p>
+      <p>정밀한 결과를 위해<br>설계된 66개 문항</p>
     </div>
     <div class="intro-card">
-      <div class="intro-card-num">12</div>
-      <div class="intro-card-title">가치 유형</div>
-      <p>직업 가치유형별<br>심층 분석 및 조언</p>
+      <div class="intro-card-num">16</div>
+      <div class="intro-card-title">성격 유형</div>
+      <p>의사소통·대인관계·<br>진로·적성 심층 분석</p>
     </div>
     <div class="intro-card">
       <div class="intro-card-num">3</div>
@@ -214,7 +219,7 @@
     <div class="intro-card">
       <div class="intro-card-num">∞</div>
       <div class="intro-card-title">시각화</div>
-      <p>12가지 점수를<br>그래프로 한눈에</p>
+      <p>4가지 축 점수를<br>그래프로 한눈에</p>
     </div>
   </div>
 
@@ -241,7 +246,7 @@
     <div class="progress-bar-bg">
       <div class="progress-bar-fill" id="progressFill"></div>
     </div>
-    <div class="progress-text" id="progressText">0 / 60</div>
+    <div class="progress-text" id="progressText">0 / 66</div>
   </div>
 
   <!-- 문항 구분선 -->
@@ -252,7 +257,7 @@
   </div>
 
   <!-- 문항 폼 -->
-  <form id="valuesForm"></form>
+  <form id="mbtiForm"></form>
 
   <div class="warning-bar" id="answerWarningBox"></div>
 
@@ -260,329 +265,234 @@
     <button class="btn-submit" id="submitBtn" onclick="submitAnswers()">결과 보기</button>
   </div>
 
-  <!-- ══ 결과 섹션 ══ -->
+  <!-- ══════════ 결과 섹션 ══════════ -->
   <div id="resultSection">
 
     <div class="result-header">
-      <div class="result-eyebrow">당신의 직업 가치관 프로필</div>
-      <div class="result-top3" id="top3Display"></div>
-      <div class="result-subtitle" id="resultSubtitle"></div>
+      <div class="result-eyebrow">당신의 성격 유형</div>
+      <div class="result-mbti-type" id="mbtiTypeDisplay"></div>
+      <div class="result-alias" id="mbtiAlias"></div>
+      <div class="result-keyword" id="mbtiKeywords"></div>
     </div>
 
-    <!-- 차트 -->
     <div class="chart-section">
-      <div class="chart-title">가치유형별 점수 비교</div>
-      <div class="chart-tabs">
-        <button class="chart-tab active" onclick="switchChart('radar',this)">레이더 차트</button>
-        <button class="chart-tab" onclick="switchChart('bar',this)">막대 그래프</button>
-      </div>
-      <canvas id="valuesChart"></canvas>
+      <div class="chart-title">성격 축별 점수 비교</div>
+      <canvas id="mbtiChart"></canvas>
     </div>
 
-    <!-- 점수 상세 -->
-    <div class="score-table-wrap">
-      <div class="score-table-title">전체 가치유형 점수</div>
-      <div id="scoreRows"></div>
-    </div>
-
-    <!-- 상세 설명 (TOP3) -->
     <div class="result-fields" id="resultFields"></div>
 
+    <!-- 버튼 -->
     <div class="result-actions">
-      <button class="btn-print" onclick="window.print()">🖨️ 인쇄 / PDF 저장</button>
+      <button class="btn-print" onclick="printResult()">🖨️ 인쇄 / PDF 저장</button>
       <button class="btn-restart" onclick="location.reload()">처음으로 돌아가기</button>
     </div>
 
   </div>
+
 </div>
 
 <script>
-const BASE_URL = "https://us-central1-values-test-31b59.cloudfunctions.net";
-let questionData = [], answers = {}, lastSearchResult = null, chartInst = null, currentChartType = "radar";
+  const FN = "https://us-central1-mbti-project-cb2a0.cloudfunctions.net";
+  let questionData = [], answers = {}, lastSearchResult = null, chartInst = null;
 
-// ── API ───────────────────────────────────────────────────────
-async function api(endpoint, body = {}) {
-  const r = await fetch(`${BASE_URL}/${endpoint}`, {
-    method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
-  const d = await r.json();
-  if (!r.ok) throw new Error(d.error || "서버 오류");
-  return d;
-}
-
-function showWarning(id, msg) {
-  const el = document.getElementById(id);
-  el.textContent = msg; el.style.display = "block";
-  if (id === "searchWarningBox") setTimeout(() => el.style.display = "none", 4000);
-}
-
-// ── 스피너 / 폼 토글 ─────────────────────────────────────────
-function setSpinner(on) {
-  document.getElementById("spinner").style.display = on ? "block" : "none";
-  document.getElementById("valuesForm").style.display = on ? "none" : "block";
-  document.getElementById("submitWrap").style.display = on ? "none" : "block";
-  if (!on) {
-    document.getElementById("progressWrap").style.display    = "block";
-    document.getElementById("questionsHeader").style.display = "flex";
+  async function api(endpoint, body) {
+    const r = await fetch(`${FN}/${endpoint}`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || "서버 오류");
+    return d;
   }
-}
 
-// ── 진행 바 ──────────────────────────────────────────────────
-function updateProgress() {
-  const done = Object.keys(answers).length;
-  const total = questionData.length || 60;
-  document.getElementById("progressFill").style.transform = `scaleX(${done / total})`;
-  document.getElementById("progressText").textContent = `${done} / ${total}`;
-}
-
-// ── 페이지 로드 → 문항 불러오기 ──────────────────────────────
-window.onload = async () => {
-  // 로딩 중: 스피너 표시, 폼 숨김
-  document.getElementById("spinner").style.display    = "block";
-  document.getElementById("valuesForm").style.display = "none";
-  document.getElementById("submitWrap").style.display = "none";
-  try {
-    const data = await api("getQuestions", {});
-    renderQuestions(data.questions || []);
-  } catch (e) {
-    alert("문항 로드 실패: " + e.message);
-  } finally {
-    // 로딩 완료: 스피너 숨김, 문항·진행바·버튼 표시
-    document.getElementById("spinner").style.display         = "none";
-    document.getElementById("valuesForm").style.display      = "block";
-    document.getElementById("submitWrap").style.display      = "block";
-    document.getElementById("progressWrap").style.display    = "block";
-    document.getElementById("questionsHeader").style.display = "flex";
+  function showWarning(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent = msg; el.style.display = "block";
+    if (id === "searchWarningBox") setTimeout(() => el.style.display = "none", 4000);
   }
-};
 
-// ── 문항 렌더링 ───────────────────────────────────────────────
-function renderQuestions(data) {
-  questionData = data;
-  const form = document.getElementById("valuesForm");
-  form.innerHTML = "";
-  data.forEach((q, i) => {
-    const div = document.createElement("div");
-    div.className = "question";
-    let choicesHtml = "";
-    for (let j = 1; j <= 5; j++) {
-      const label = q[`select${j}`];
-      const score = q[`score${j}`];
-      if (!label) continue;
-      choicesHtml += `<button type="button" class="btn-choice" onclick="selectAnswer('${q.id}',${score},this)">${label}</button>`;
+  function setSpinner(on) {
+    document.getElementById("spinner").style.display = on ? "block" : "none";
+    document.getElementById("mbtiForm").style.display = on ? "none" : "block";
+    document.getElementById("submitWrap").style.display = on ? "none" : "block";
+    if (!on && questionData.length) {
+      document.getElementById("progressWrap").style.display = "block";
+      document.getElementById("questionsHeader").style.display = "flex";
     }
-    div.innerHTML = `
-      <div class="q-meta">
-        <div class="q-num">${String(i+1).padStart(2,"0")}</div>
-        <div class="q-text">${q.text}</div>
-      </div>
-      <div class="q-choices">${choicesHtml}</div>`;
-    form.appendChild(div);
-  });
-}
+  }
 
-// ── 답변 선택 ─────────────────────────────────────────────────
-function selectAnswer(qid, score, btn) {
-  answers[qid] = score;
-  btn.closest(".q-choices").querySelectorAll(".btn-choice").forEach(b => b.classList.remove("selected"));
-  btn.classList.add("selected");
-  updateProgress();
-}
+  function updateProgress() {
+    const done = Object.keys(answers).length;
+    const total = questionData.length || 66;
+    document.getElementById("progressFill").style.transform = `scaleX(${done / total})`;
+    document.getElementById("progressText").textContent = `${done} / ${total}`;
+  }
 
-// ── 이름 검색 ─────────────────────────────────────────────────
-async function searchPrevious() {
-  const name = document.getElementById("nameInput").value.trim();
-  if (!name) return showWarning("searchWarningBox", "이름을 입력해주세요.");
-  const box = document.getElementById("searchResponse");
-  box.innerHTML = `<div style="font-size:13px;color:var(--ink2);padding:10px 0;">검색 중…</div>`;
-  try {
-    const data = await api("getUserResult", { name });
-    lastSearchResult = data.found ? data.result : null;
-    if (data.found) {
-      box.innerHTML = `<div class="confirm-box">
-        <p>이전 검사 기록이 있습니다. 결과를 바로 보시겠습니까?</p>
-        <div class="confirm-btns">
-          <button class="btn-yes" onclick="confirmLoad(true)">예, 결과 보기</button>
-          <button class="btn-no"  onclick="confirmLoad(false)">새로 검사하기</button>
-        </div></div>`;
-    } else {
-      box.innerHTML = `<div class="confirm-box">
-        <p>기존 기록이 없습니다. 지금 바로 검사를 시작하시겠습니까?</p>
-        <div class="confirm-btns">
-          <button class="btn-yes" onclick="confirmLoad(true,true)">예, 시작하기</button>
-          <button class="btn-no"  onclick="confirmLoad(false)">취소</button>
-        </div></div>`;
+  window.onload = async () => {
+    setSpinner(true);
+    try {
+      const { questions } = await api("getQuestions", {});
+      renderQuestions(questions);
+    } catch (e) {
+      alert("문항 로드 실패: " + e.message);
+    } finally {
+      setSpinner(false);
     }
-  } catch(e) {
-    box.innerHTML = `<div style="color:#e05252;font-size:13px;padding:10px 0;">오류: ${e.message}</div>`;
-  }
-}
+  };
 
-// ── 검색 결과 확인 ────────────────────────────────────────────
-function confirmLoad(ok, isNew = false) {
-  document.getElementById("searchResponse").innerHTML = "";
-  if (ok && lastSearchResult) renderResult(lastSearchResult);
-  else if (!ok) location.reload();
-  // isNew = true 이면 그냥 닫고 검사 진행
-}
-
-// ── 답변 제출 ─────────────────────────────────────────────────
-async function submitAnswers() {
-  const name = document.getElementById("nameInput").value.trim();
-  if (!name) return showWarning("searchWarningBox", "이름을 입력해주세요.");
-  const unanswered = questionData.filter(q => answers[q.id] === undefined);
-  if (unanswered.length) {
-    showWarning("answerWarningBox",
-      `${unanswered.length}개 문항이 선택되지 않았습니다: ${unanswered.map(q=>q.id).join(", ")}`);
-    return;
-  }
-  document.getElementById("answerWarningBox").style.display = "none";
-  const btn = document.getElementById("submitBtn");
-  btn.disabled = true; btn.textContent = "분석 중…";
-  try {
-    const data = await api("saveAnswers", { name, answers });
-    renderResult(data.result);
-  } catch(e) {
-    alert("오류: " + e.message);
-    btn.disabled = false; btn.textContent = "결과 보기";
-  }
-}
-
-// ── 결과 렌더링 ───────────────────────────────────────────────
-function renderResult(result) {
-  if (!result || !Array.isArray(result)) { alert("결과 데이터가 없습니다."); return; }
-
-  // 폼 영역 숨기기
-  ["valuesForm","submitWrap","progressWrap","questionsHeader"].forEach(id => {
-    document.getElementById(id).style.display = "none";
-  });
-  document.querySelector(".intro-cards").style.display = "none";
-  document.querySelector(".name-section").style.display = "none";
-  document.getElementById("searchResponse").innerHTML = "";
-
-  // 인쇄 날짜
-  const now = new Date();
-  document.getElementById("printDate").textContent =
-    `${now.getFullYear()}. ${now.getMonth()+1}. ${now.getDate()} 출력`;
-
-  // 점수 내림차순 정렬
-  const sorted = [...result].sort((a,b) => b.점수 - a.점수);
-  const top3 = sorted.slice(0, 3);
-
-  // TOP3 표시
-  const top3El = document.getElementById("top3Display");
-  top3El.innerHTML = top3.map((item, i) => `
-    ${i > 0 ? '<div class="result-divider"></div>' : ''}
-    <div class="top3-badge">
-      <div class="top3-rank">${["1st","2nd","3rd"][i]}</div>
-      <div class="top3-name${i===0?' rank1':''}">${item.가치유형}</div>
-      <div class="top3-score">${item.점수}점</div>
-    </div>`).join("");
-
-  document.getElementById("resultSubtitle").textContent =
-    `${top3[0].가치유형} · ${top3[1].가치유형} · ${top3[2].가치유형}을 중심으로 한 직업 가치관 프로필`;
-
-  // 차트
-  drawChart(result, currentChartType);
-
-  // 점수 바 테이블
-  const scoreRowsEl = document.getElementById("scoreRows");
-  scoreRowsEl.innerHTML = sorted.map((row, i) => `
-    <div class="score-row${i===0?' rank1':''}">
-      <div class="score-type">${i<3?['①','②','③'][i]+' ':''}${row.가치유형}</div>
-      <div>
-        <div class="score-bar-bg">
-          <div class="score-bar-fill" style="width:${(row.점수/30)*100}%"></div>
+  function renderQuestions(data) {
+    questionData = data;
+    const form = document.getElementById("mbtiForm");
+    form.innerHTML = "";
+    data.forEach((q, i) => {
+      const div = document.createElement("div");
+      div.className = "question";
+      div.innerHTML = `
+        <div class="q-meta">
+          <div class="q-num">${String(i+1).padStart(2,"0")}</div>
+          <div class="q-text">${q.text}</div>
         </div>
-      </div>
-      <div class="score-val${i===0?' rank1':''}">${row.점수}</div>
-    </div>`).join("");
-
-  // TOP3 상세 설명
-  const fieldsEl = document.getElementById("resultFields");
-  fieldsEl.innerHTML = top3.map(row => `
-    <div class="field-section-title">${row.가치유형} 유형 상세</div>
-    <div class="field-row"><div class="field-key">평가</div><div class="field-val">${row.평가||"–"}</div></div>
-    <div class="field-row"><div class="field-key">자기개발 팁</div><div class="field-val">${row.자기개발팁||"–"}</div></div>
-    <div class="field-row"><div class="field-key">성장 팁</div><div class="field-val">${row.성장팁||"–"}</div></div>
-    <div class="field-row"><div class="field-key">강점</div><div class="field-val">${row.강점||"–"}</div></div>
-    <div class="field-row"><div class="field-key">약점</div><div class="field-val">${row.약점||"–"}</div></div>
-  `).join("");
-
-  document.getElementById("resultSection").style.display = "block";
-  setTimeout(() => document.getElementById("resultSection").scrollIntoView({ behavior:"smooth" }), 100);
-}
-
-// ── 차트 ─────────────────────────────────────────────────────
-function drawChart(result, type) {
-  if (chartInst) { chartInst.destroy(); chartInst = null; }
-  const sorted = [...result].sort((a,b) => b.점수 - a.점수);
-  const labels = sorted.map(r => r.가치유형);
-  const scores = sorted.map(r => r.점수);
-  const ctx = document.getElementById("valuesChart").getContext("2d");
-
-  const commonDataset = {
-    label: "가치 점수",
-    data: scores,
-    backgroundColor: type === "radar"
-      ? "rgba(46,125,110,0.18)"
-      : scores.map((_,i) => i===0?"rgba(46,125,110,0.9)":i<3?"rgba(74,173,152,0.7)":"rgba(74,173,152,0.35)"),
-    borderColor: type === "radar"
-      ? "rgba(46,125,110,0.9)"
-      : scores.map((_,i) => i<3?"rgba(46,125,110,1)":"rgba(46,125,110,0.5)"),
-    borderWidth: type === "radar" ? 2 : 1,
-    pointBackgroundColor: "rgba(46,125,110,1)",
-    pointRadius: 3,
-    barThickness: 22
-  };
-
-  const commonScaleStyle = {
-    grid: { color: "rgba(0,0,0,0.05)" },
-    ticks: { font: { family:"Noto Serif KR", size:12 }, color:"#4e4840" }
-  };
-
-  chartInst = new Chart(ctx, {
-    type: type,
-    data: { labels, datasets: [commonDataset] },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: { label: ctx => ` ${ctx.raw}점` },
-          titleFont: { family:"Noto Serif KR" },
-          bodyFont:  { family:"Noto Serif KR" }
-        }
-      },
-      scales: type === "radar" ? {
-        r: {
-          min:0, max:30, ticks:{ stepSize:5, font:{family:"Noto Serif KR",size:10}, color:"#9a9088" },
-          grid:{ color:"rgba(0,0,0,0.06)" },
-          pointLabels:{ font:{family:"Noto Serif KR",size:12}, color:"#4e4840" }
-        }
-      } : {
-        x: commonScaleStyle,
-        y: { ...commonScaleStyle, beginAtZero:true, max:30, ticks:{...commonScaleStyle.ticks, stepSize:5} }
-      }
-    }
-  });
-}
-
-function switchChart(type, btn) {
-  document.querySelectorAll(".chart-tab").forEach(t => t.classList.remove("active"));
-  btn.classList.add("active");
-  currentChartType = type;
-  // 현재 결과가 있으면 다시 그리기
-  const rows = document.querySelectorAll(".score-row");
-  if (rows.length) {
-    const scoreData = [...rows].map(row => ({
-      가치유형: row.querySelector(".score-type").textContent.replace(/^[①②③] /,""),
-      점수: parseInt(row.querySelector(".score-val").textContent)
-    }));
-    drawChart(scoreData, type);
+        <div class="q-choices">
+          <button type="button" class="btn-choice" onclick="selectAnswer('${q.id}','${q.code1}',this)">${q.a}</button>
+          <button type="button" class="btn-choice" onclick="selectAnswer('${q.id}','${q.code2}',this)">${q.b}</button>
+        </div>`;
+      form.appendChild(div);
+    });
   }
-}
+
+  function selectAnswer(qid, code, btn) {
+    answers[qid] = code;
+    btn.closest(".q-choices").querySelectorAll(".btn-choice").forEach(b => b.classList.remove("selected"));
+    btn.classList.add("selected");
+    updateProgress();
+  }
+
+  async function searchPrevious() {
+    const name = document.getElementById("nameInput").value.trim();
+    if (!name) return showWarning("searchWarningBox", "이름을 입력해주세요.");
+    const box = document.getElementById("searchResponse");
+    box.innerHTML = `<div style="font-size:13px;color:var(--ink2);padding:10px 0;">검색 중…</div>`;
+    try {
+      const data = await api("loadPreviousResult", { name });
+      lastSearchResult = data.found ? data.result : null;
+      if (data.found) {
+        box.innerHTML = `<div class="confirm-box">
+          <p>이전 검사 기록이 있습니다. 결과를 바로 보시겠습니까?</p>
+          <div class="confirm-btns">
+            <button class="btn-yes" onclick="confirmLoad(true)">예, 결과 보기</button>
+            <button class="btn-no" onclick="confirmLoad(false)">새로 검사하기</button>
+          </div></div>`;
+      } else {
+        box.innerHTML = `<div class="confirm-box">
+          <p>기존 기록이 없습니다. 지금 바로 검사를 시작하시겠습니까?</p>
+          <div class="confirm-btns">
+            <button class="btn-yes" onclick="confirmLoad(true,true)">예, 시작하기</button>
+            <button class="btn-no" onclick="confirmLoad(false)">취소</button>
+          </div></div>`;
+      }
+    } catch(e) {
+      box.innerHTML = `<div style="color:#e05252;font-size:13px;padding:10px 0;">오류: ${e.message}</div>`;
+    }
+  }
+
+  function confirmLoad(ok, isNew = false) {
+    document.getElementById("searchResponse").innerHTML = "";
+    if (ok && lastSearchResult) renderResult(lastSearchResult);
+    else if (!ok) location.reload();
+  }
+
+  async function submitAnswers() {
+    const name = document.getElementById("nameInput").value.trim();
+    if (!name) return showWarning("searchWarningBox", "이름을 입력해주세요.");
+    const unanswered = questionData.filter(q => !answers[q.id]);
+    if (unanswered.length) {
+      showWarning("answerWarningBox",
+        `${unanswered.length}개 문항이 선택되지 않았습니다: ${unanswered.map(q=>q.id).join(", ")}`);
+      return;
+    }
+    document.getElementById("answerWarningBox").style.display = "none";
+    const btn = document.getElementById("submitBtn");
+    btn.disabled = true; btn.textContent = "분석 중…";
+    try {
+      const desc = await api("saveAnswers", { name, answers });
+      renderResult(desc);
+    } catch(e) {
+      alert("오류: " + e.message);
+      btn.disabled = false; btn.textContent = "결과 보기";
+    }
+  }
+
+  function renderResult(desc) {
+    if (!desc || !desc["MBTI 유형"]) { alert("결과를 불러올 수 없습니다."); return; }
+
+    ["mbtiForm","submitWrap","progressWrap","questionsHeader"].forEach(id => {
+      document.getElementById(id).style.display = "none";
+    });
+    document.querySelector(".intro-cards").style.display = "none";
+    document.querySelector(".name-section").style.display = "none";
+    document.getElementById("searchResponse").innerHTML = "";
+
+    // 인쇄용 날짜
+    const now = new Date();
+    document.getElementById("printDate").textContent =
+      `${now.getFullYear()}. ${now.getMonth()+1}. ${now.getDate()} 출력`;
+
+    const type = desc["MBTI 유형"];
+    document.getElementById("mbtiTypeDisplay").innerHTML =
+      type.split("").map(l=>`<span class="mbti-letter">${l}</span>`).join("");
+    document.getElementById("mbtiAlias").textContent = `"${desc["별칭(일반적 특징)"] || ""}"`;
+
+    const kws = (desc["키워드"] || "").split(/[,·]/).map(k=>k.trim()).filter(Boolean);
+    document.getElementById("mbtiKeywords").innerHTML =
+      kws.map(k=>`<span class="kw-tag">${k}</span>`).join("");
+
+    drawChart(desc);
+
+    const fields = [
+      "공통점","속담/격언","싫어하는 말","자주 듣는 말",
+      "장점","단점","의사소통 스타일","리더십 스타일",
+      "진로 및 직업 추천","인간관계 스타일","스트레스 반응","성장 전략"
+    ];
+    document.getElementById("resultFields").innerHTML =
+      fields.map(k=>`
+        <div class="field-row">
+          <div class="field-key">${k}</div>
+          <div class="field-val">${desc[k] || "–"}</div>
+        </div>`).join("");
+
+    document.getElementById("resultSection").style.display = "block";
+    setTimeout(() => document.getElementById("resultSection").scrollIntoView({ behavior:"smooth" }), 100);
+  }
+
+  function drawChart(desc) {
+    if (chartInst) { chartInst.destroy(); chartInst = null; }
+    const ctx = document.getElementById("mbtiChart").getContext("2d");
+    chartInst = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["에너지 (E·I)", "인식 (S·N)", "판단 (T·F)", "생활 (J·P)"],
+        datasets: [
+          { label: "E / S / T / J", data: [desc.E, desc.S, desc.T, desc.J], backgroundColor: "rgba(184,144,58,0.8)", borderColor: "#b8903a", borderWidth: 1 },
+          { label: "I / N / F / P", data: [desc.I, desc.N, desc.F, desc.P], backgroundColor: "rgba(184,144,58,0.2)", borderColor: "rgba(184,144,58,0.6)", borderWidth: 1 }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position:"top", labels:{ font:{ family:"Noto Serif KR", size:12 }, color:"#4a4540", boxWidth:14 } }
+        },
+        scales: {
+          x: { grid:{ color:"rgba(0,0,0,0.05)" }, ticks:{ font:{ family:"Noto Serif KR" }, color:"#4a4540" } },
+          y: { beginAtZero:true, grid:{ color:"rgba(0,0,0,0.05)" }, ticks:{ font:{ family:"Noto Serif KR" }, color:"#4a4540" } }
+        }
+      }
+    });
+  }
+
+  function printResult() {
+    window.print();
+  }
 </script>
 </body>
 </html>
