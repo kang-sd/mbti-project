@@ -128,6 +128,15 @@
     @keyframes fadeUp   { from { opacity:0; transform:translateY(16px);  } to { opacity:1; transform:translateY(0); } }
     @keyframes spin     { to { transform: rotate(360deg); } }
 
+    /* 미응답 문항 하이라이트 */
+    .question.unanswered {
+      background: #fff5f5;
+      border-left: 3px solid #e05252;
+      padding-left: 14px;
+      margin-left: -17px;
+    }
+    .question.unanswered .q-num { color: #e05252; opacity: 1; }
+
     /* ══════════ 인쇄 스타일 ══════════ */
     @media print {
       /* 화면 요소 숨기기 */
@@ -254,7 +263,7 @@
   <!-- 메인 헤더 -->
   <div class="header">
     <div class="header-eyebrow">Jennifer Canvas · 성격 분석</div>
-    <h1>Psy<span>che</span></h1>
+    <h1 onclick="openAdmin()" style="cursor:default;">Psy<span>che</span></h1>
     <div class="header-rule"></div>
     <div class="header-sub">당신의 내면을 비추는 16가지 성격 유형</div>
   </div>
@@ -303,6 +312,9 @@
 
   <!-- 진행 바 -->
   <div class="progress-wrap" id="progressWrap">
+    <div id="nameReminderBar" style="display:none; background:#fff8e1; border-left:3px solid #ffc107; color:#7c5c00; padding:8px 14px; font-size:13px; margin-bottom:8px; cursor:pointer;" onclick="document.getElementById('nameInput').focus(); document.querySelector('.name-section').scrollIntoView({behavior:'smooth'});">
+      ✏️ 성함을 입력해주세요 — 여기를 클릭하면 입력란으로 이동합니다
+    </div>
     <div class="progress-bar-bg">
       <div class="progress-bar-fill" id="progressFill"></div>
     </div>
@@ -369,7 +381,7 @@
   function showWarning(id, msg) {
     const el = document.getElementById(id);
     el.textContent = msg; el.style.display = "block";
-    if (id === "searchWarningBox") setTimeout(() => el.style.display = "none", 4000);
+    setTimeout(() => el.style.display = "none", 5000);
   }
 
   function setSpinner(on) {
@@ -390,6 +402,12 @@
   }
 
   window.onload = async () => {
+    // 이름 입력하면 reminder 즉시 숨김
+    document.getElementById("nameInput").addEventListener("input", () => {
+      if (document.getElementById("nameInput").value.trim()) {
+        document.getElementById("nameReminderBar").style.display = "none";
+      }
+    });
     setSpinner(true);
     try {
       const { questions } = await api("getQuestions", {});
@@ -425,7 +443,15 @@
     answers[qid] = code;
     btn.closest(".q-choices").querySelectorAll(".btn-choice").forEach(b => b.classList.remove("selected"));
     btn.classList.add("selected");
+    btn.closest(".question")?.classList.remove("unanswered");
     updateProgress();
+    // 이름 미입력 시 안내 표시
+    const reminder = document.getElementById("nameReminderBar");
+    if (!document.getElementById("nameInput").value.trim()) {
+      reminder.style.display = "block";
+    } else {
+      reminder.style.display = "none";
+    }
   }
 
   async function searchPrevious() {
@@ -464,11 +490,35 @@
 
   async function submitAnswers() {
     const name = document.getElementById("nameInput").value.trim();
-    if (!name) return showWarning("searchWarningBox", "이름을 입력해주세요.");
+    if (!name) {
+      showWarning("answerWarningBox", "⚠️ 성함을 입력해주세요. 페이지 상단 이름 입력란을 채워주세요.");
+      document.getElementById("answerWarningBox").scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
     const unanswered = questionData.filter(q => !answers[q.id]);
     if (unanswered.length) {
-      showWarning("answerWarningBox",
-        `${unanswered.length}개 문항이 선택되지 않았습니다: ${unanswered.map(q=>q.id).join(", ")}`);
+      // 기존 하이라이트 초기화
+      document.querySelectorAll(".question.unanswered").forEach(el => el.classList.remove("unanswered"));
+      // 미응답 문항 번호 수집
+      const unansweredNums = unanswered.map(q => {
+        const idx = questionData.findIndex(qq => qq.id === q.id);
+        return idx + 1;
+      });
+      // 미응답 문항 하이라이트
+      unanswered.forEach(q => {
+        const idx = questionData.findIndex(qq => qq.id === q.id);
+        const qEls = document.querySelectorAll(".question");
+        if (qEls[idx]) qEls[idx].classList.add("unanswered");
+      });
+      // 경고 메시지
+      const msg = unanswered.length === 1
+        ? `⚠️ ${unansweredNums[0]}번 문항이 선택되지 않았습니다.`
+        : `⚠️ ${unanswered.length}개 문항이 선택되지 않았습니다: ${unansweredNums.join(", ")}번`;
+      showWarning("answerWarningBox", msg);
+      // 첫 번째 미응답 문항으로 스크롤
+      const firstIdx = questionData.findIndex(qq => qq.id === unanswered[0].id);
+      const qEls = document.querySelectorAll(".question");
+      if (qEls[firstIdx]) qEls[firstIdx].scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
     document.getElementById("answerWarningBox").style.display = "none";
@@ -552,10 +602,7 @@
 
 
   // ── 키보드 'a' → 관리자 모드 ────────────────────────────────
-  document.addEventListener("keydown", e => {
-    if (["INPUT","TEXTAREA","SELECT"].includes(document.activeElement.tagName)) return;
-    if (e.key === "a" || e.key === "A") openAdmin();
-  });
+  // 관리자: 로고(h1) 클릭으로 진입
   document.getElementById("adminOverlay").addEventListener("click", e => {
     if (e.target === document.getElementById("adminOverlay")) closeAdmin();
   });
@@ -643,20 +690,9 @@
       const item = (data.results||[]).find(r => r.id === docId);
       if (!item) { alert("데이터를 찾을 수 없습니다."); return; }
       closeAdmin();
-      // scores와 mbti로 desc 구성 후 renderResult 호출
-      const fakeDesc = {
-        "MBTI 유형": item.mbti||"",
-        "키워드":"","별칭(일반적 특징)":"","공통점":"",
-        "속담/격언":"","싫어하는 말":"","자주 듣는 말":"",
-        "장점":"","단점":"","의사소통 스타일":"",
-        "리더십 스타일":"","진로 및 직업 추천":"",
-        "인간관계 스타일":"","스트레스 반응":"","성장 전략":"",
-        E: item.scores.E||0, I: item.scores.I||0,
-        S: item.scores.S||0, N: item.scores.N||0,
-        T: item.scores.T||0, F: item.scores.F||0,
-        J: item.scores.J||0, P: item.scores.P||0
-      };
-      renderResult(fakeDesc);
+      // 서버에서 해설 포함 결과 받기
+      const desc = await api("getResultByMbti", { mbti: item.mbti, scores: item.scores });
+      renderResult(desc);
     } catch(e) { alert("오류: " + e.message); }
   }
 
