@@ -3,200 +3,670 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>성격 분석 검사</title>
+  <title>PSYCHE · 성격 분석</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+KR:wght@300;400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    :root {
+      --ink:    #0d0d0d;
+      --cream:  #f5f0e8;
+      --gold:   #c9a84c;
+      --gold2:  #e8d5a3;
+      --rust:   #8b4513;
+      --mist:   #e8e4dc;
+      --dim:    #6b6560;
+      --white:  #fdfaf5;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: 'Noto Sans KR', sans-serif;
-      padding: 16px;
-      max-width: 900px;
-      margin: auto;
-      background-color: #f7fbff;
+      background: var(--ink);
+      color: var(--cream);
+      font-family: 'Noto Serif KR', serif;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
-    h2 { color: #0050a0; text-align: center; }
-    .warning {
-      background-color: #ffdddd;
-      color: #a00;
-      padding: 12px;
-      border: 1px solid #a00;
-      border-radius: 5px;
-      margin: 10px 0;
-      display: none;
+
+    /* ── 배경 질감 ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(201,168,76,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 90%, rgba(139,69,19,0.06) 0%, transparent 60%),
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
     }
-    .question {
-      margin-bottom: 24px;
-      padding: 12px;
-      border-bottom: 1px solid #ccc;
-      font-size: 18px;
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
     }
-    .btn-choice {
-      display: inline-block;
-      margin-right: 10px;
-      padding: 12px 24px;
+
+    /* ── 헤더 ── */
+    .header {
+      text-align: center;
+      padding: 60px 0 50px;
+      animation: fadeDown 1s ease both;
+    }
+    .header-eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(52px, 10vw, 88px);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--cream);
+      line-height: 0.9;
+      letter-spacing: -2px;
+    }
+    .header h1 span { color: var(--gold); }
+    .header-rule {
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 24px auto 20px;
+    }
+    .header-sub {
+      font-size: 13px;
+      color: var(--dim);
+      letter-spacing: 1px;
+    }
+
+    /* ── 안내 카드 ── */
+    .intro-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: rgba(201,168,76,0.2);
+      border: 1px solid rgba(201,168,76,0.2);
+      margin-bottom: 48px;
+      animation: fadeUp 1s 0.3s ease both;
+    }
+    .intro-card {
+      background: rgba(13,13,13,0.9);
+      padding: 28px 24px;
+    }
+    .intro-card-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      font-weight: 300;
+      color: rgba(201,168,76,0.3);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .intro-card-title {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+    .intro-card p {
+      font-size: 13px;
+      color: var(--dim);
+      line-height: 1.7;
+    }
+
+    /* ── 이름 입력 섹션 ── */
+    .name-section {
+      animation: fadeUp 1s 0.5s ease both;
+      margin-bottom: 40px;
+    }
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+    .name-row {
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+    }
+    .name-input {
+      flex: 1;
+      background: rgba(245,240,232,0.04);
+      border: 1px solid rgba(201,168,76,0.3);
+      color: var(--cream);
+      font-family: 'Noto Serif KR', serif;
       font-size: 16px;
-      background-color: #f0f0f0;
-      border: 1px solid #bbb;
-      border-radius: 6px;
+      padding: 16px 20px;
+      outline: none;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .name-input:focus {
+      border-color: var(--gold);
+      background: rgba(201,168,76,0.06);
+    }
+    .name-input::placeholder { color: rgba(245,240,232,0.2); }
+    .btn-search {
+      background: transparent;
+      border: 1px solid rgba(201,168,76,0.5);
+      color: var(--gold);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 2px;
+      padding: 16px 28px;
       cursor: pointer;
-      color: black;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+    .btn-search:hover {
+      background: var(--gold);
+      color: var(--ink);
+    }
+
+    /* ── 확인 다이얼로그 ── */
+    .confirm-box {
+      background: rgba(201,168,76,0.06);
+      border: 1px solid rgba(201,168,76,0.25);
+      padding: 24px 28px;
+      margin-bottom: 32px;
+      animation: fadeUp 0.4s ease both;
+    }
+    .confirm-box p {
+      font-size: 15px;
+      color: var(--cream);
+      margin-bottom: 18px;
+      line-height: 1.6;
+    }
+    .confirm-btns { display: flex; gap: 10px; }
+    .btn-yes {
+      background: var(--gold);
+      border: none;
+      color: var(--ink);
+      font-family: 'Noto Serif KR', serif;
+      font-size: 14px;
+      padding: 12px 28px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+    .btn-yes:hover { opacity: 0.85; }
+    .btn-no {
+      background: transparent;
+      border: 1px solid rgba(245,240,232,0.2);
+      color: var(--dim);
+      font-family: 'Noto Serif KR', serif;
+      font-size: 14px;
+      padding: 12px 28px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-no:hover { border-color: var(--cream); color: var(--cream); }
+
+    /* ── 문항 구분선 헤더 ── */
+    .questions-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 32px;
+      animation: fadeUp 1s 0.7s ease both;
+    }
+    .questions-header-line { flex: 1; height: 1px; background: rgba(201,168,76,0.2); }
+    .questions-header-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      white-space: nowrap;
+    }
+
+    /* ── 문항 ── */
+    #mbtiForm { animation: fadeUp 1s 0.8s ease both; }
+    .question {
+      border-bottom: 1px solid rgba(245,240,232,0.07);
+      padding: 28px 0;
+      transition: background 0.2s;
+    }
+    .question:hover { background: rgba(201,168,76,0.02); }
+    .q-meta {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .q-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      color: rgba(201,168,76,0.5);
+      min-width: 30px;
+    }
+    .q-text {
+      font-size: 16px;
+      color: var(--cream);
+      line-height: 1.6;
+      font-weight: 300;
+    }
+    .q-choices { display: flex; gap: 10px; padding-left: 42px; flex-wrap: wrap; }
+    .btn-choice {
+      background: rgba(245,240,232,0.03);
+      border: 1px solid rgba(245,240,232,0.12);
+      color: rgba(245,240,232,0.55);
+      font-family: 'Noto Serif KR', serif;
+      font-size: 14px;
+      padding: 12px 24px;
+      cursor: pointer;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-choice::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.25s ease;
+      z-index: 0;
+    }
+    .btn-choice span { position: relative; z-index: 1; }
+    .btn-choice:hover {
+      border-color: rgba(201,168,76,0.5);
+      color: var(--cream);
     }
     .btn-choice.selected {
-      background-color: #007BFF;
-      color: white;
-      border-color: #007BFF;
+      border-color: var(--gold);
+      color: var(--ink);
     }
-    input[type="text"] {
-      font-size: 18px;
-      padding: 10px;
-      width: 60%;
-      max-width: 300px;
-      margin-right: 10px;
+    .btn-choice.selected::before { transform: scaleX(1); }
+    .btn-choice.selected span { color: var(--ink); font-weight: 600; }
+
+    /* ── 경고 ── */
+    .warning-bar {
+      background: rgba(139,69,19,0.15);
+      border-left: 3px solid var(--rust);
+      color: #e8a87c;
+      padding: 14px 20px;
+      font-size: 13px;
+      margin: 16px 0;
+      display: none;
+      line-height: 1.6;
     }
-    button {
-      font-size: 18px;
-      padding: 10px 20px;
-      background-color: #2d7ff9;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+
+    /* ── 제출 버튼 ── */
+    .submit-wrap {
+      padding: 48px 0 0;
+      text-align: center;
     }
-    button:hover { background-color: #115fd3; }
     .btn-submit {
-      display: block;
+      position: relative;
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      letter-spacing: 4px;
+      padding: 20px 60px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: color 0.4s;
       width: 100%;
-      font-size: 20px;
-      padding: 16px;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      margin: 30px 0 10px;
+      max-width: 400px;
     }
-    .btn-submit:hover { background-color: #218838; }
-    .confirm-box {
-      background: #fff8e1;
-      border: 1px solid #ffc107;
-      border-radius: 8px;
-      padding: 16px;
-      margin: 12px 0;
+    .btn-submit::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--gold);
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform 0.4s ease;
+      z-index: 0;
     }
-    .confirm-box button {
-      margin-right: 10px;
-      font-size: 16px;
-      padding: 8px 20px;
+    .btn-submit:hover { color: var(--ink); }
+    .btn-submit:hover::before { transform: scaleY(1); }
+    .btn-submit span { position: relative; z-index: 1; }
+    .btn-submit:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
     }
+    .btn-submit:disabled::before { display: none; }
+
+    /* ── 스피너 ── */
     #spinner {
       display: none;
       text-align: center;
-      padding: 30px;
-      font-size: 18px;
-      color: #555;
+      padding: 60px 0;
     }
+    .spinner-ring {
+      width: 48px;
+      height: 48px;
+      border: 1px solid rgba(201,168,76,0.2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+    .spinner-text {
+      font-size: 12px;
+      letter-spacing: 3px;
+      color: var(--dim);
+      text-transform: uppercase;
+    }
+
+    /* ── 결과 섹션 ── */
+    #resultSection {
+      display: none;
+      animation: fadeUp 0.8s ease both;
+    }
+    .result-header {
+      text-align: center;
+      padding: 60px 0 48px;
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+      margin-bottom: 48px;
+    }
+    .result-eyebrow {
+      font-size: 10px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 24px;
+    }
+    .result-mbti-type {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(60px, 15vw, 120px);
+      font-weight: 300;
+      color: var(--cream);
+      line-height: 1;
+      letter-spacing: -3px;
+    }
+    .result-mbti-type .mbti-letter { color: var(--gold); }
+    .result-alias {
+      font-size: 15px;
+      color: var(--dim);
+      margin-top: 20px;
+      font-style: italic;
+      line-height: 1.6;
+    }
+    .result-keyword {
+      margin-top: 16px;
+      display: inline-flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .kw-tag {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid rgba(201,168,76,0.3);
+      padding: 5px 14px;
+    }
+
+    /* ── 차트 섹션 ── */
+    .chart-section {
+      margin-bottom: 48px;
+      padding: 32px;
+      border: 1px solid rgba(201,168,76,0.15);
+      background: rgba(201,168,76,0.02);
+    }
+    .chart-title {
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    /* ── 결과 테이블 ── */
+    .result-fields { margin-bottom: 48px; }
+    .field-row {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      border-bottom: 1px solid rgba(245,240,232,0.06);
+    }
+    .field-row:first-child { border-top: 1px solid rgba(245,240,232,0.06); }
+    .field-key {
+      padding: 20px 16px 20px 0;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      line-height: 1.6;
+      border-right: 1px solid rgba(201,168,76,0.15);
+    }
+    .field-val {
+      padding: 20px 0 20px 24px;
+      font-size: 14px;
+      color: rgba(245,240,232,0.75);
+      line-height: 1.8;
+    }
+
+    /* ── 다시 하기 버튼 ── */
+    .btn-restart {
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+      background: transparent;
+      border: 1px solid rgba(245,240,232,0.15);
+      color: var(--dim);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 3px;
+      padding: 16px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.3s;
+    }
+    .btn-restart:hover { border-color: var(--cream); color: var(--cream); }
+
+    /* ── 진행 표시 바 ── */
+    .progress-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 12px 0;
+      background: linear-gradient(var(--ink), transparent);
+    }
+    .progress-bar-bg {
+      height: 1px;
+      background: rgba(245,240,232,0.08);
+      position: relative;
+    }
+    .progress-bar-fill {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, var(--gold), var(--gold2));
+      transform-origin: left;
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    .progress-text {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--dim);
+      text-align: right;
+      margin-top: 6px;
+    }
+
+    /* ── 애니메이션 ── */
+    @keyframes fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeUp   { from { opacity:0; transform:translateY(20px);  } to { opacity:1; transform:translateY(0); } }
+    @keyframes spin     { to { transform: rotate(360deg); } }
+
+    /* ── 반응형 ── */
     @media (max-width: 600px) {
-      .btn-choice {
-        padding: 14px 18px;
-        font-size: 18px;
-        display: block;
-        width: 100%;
-        margin-bottom: 10px;
-      }
-      input[type="text"] { width: 100%; margin-bottom: 10px; }
-      button { width: 100%; }
+      .intro-cards { grid-template-columns: 1fr; }
+      .q-choices { padding-left: 0; }
+      .btn-choice { flex: 1; min-width: 120px; }
+      .field-row { grid-template-columns: 1fr; }
+      .field-key { border-right: none; border-bottom: 1px solid rgba(201,168,76,0.1); padding-bottom: 6px; }
+      .field-val { padding-left: 0; }
     }
   </style>
 </head>
 <body>
 
-  <h2>성격 분석 검사</h2>
+<div class="container">
 
-  <!-- 검사 설명 박스 -->
-  <div style="background-color:#f0f8ff; border-left:6px solid #007BFF; padding:16px; margin-bottom:20px; border-radius:8px;">
-    <strong style="font-size:18px; color:#0050a0;">💡 성격 분석 검사란?</strong><br>
-    성격테스트 결과로 알 수 있는 성격 유형은 총 16가지이며<br>
-    의사소통, 대인관계, 성격부터 진로, 적성 등을 알 수 있는 성격 테스트입니다.<br>
-    결과는 <strong style="color:#0050a0;">막대그래프</strong>로 시각화됩니다.
+  <!-- 헤더 -->
+  <div class="header">
+    <div class="header-eyebrow">Jennifer Canvas · 성격 분석</div>
+    <h1>Psy<span>che</span></h1>
+    <div class="header-rule"></div>
+    <div class="header-sub">당신의 내면을 비추는 16가지 성격 유형</div>
   </div>
 
-  <!-- 유의사항 박스 -->
-  <div style="background-color:#f8f9fa; border-left:6px solid #6c757d; padding:16px; margin-bottom:30px; border-radius:8px;">
-    <strong style="font-size:16px; color:#333;">🔍 검사 유의사항</strong><br>
-    - 본 검사는 유효한 결과를 위해 <strong>66문항</strong>으로 구성합니다<br>
-    - 결과는 <strong>3일간 보관</strong>되며 자동 삭제됩니다<br>
-    - 기존 검사자는 <strong>이름 검색</strong>으로 결과 확인 가능합니다.
+  <!-- 안내 카드 -->
+  <div class="intro-cards">
+    <div class="intro-card">
+      <div class="intro-card-num">66</div>
+      <div class="intro-card-title">문항 구성</div>
+      <p>정밀한 결과를 위해 설계된<br>66개의 선별 문항</p>
+    </div>
+    <div class="intro-card">
+      <div class="intro-card-num">16</div>
+      <div class="intro-card-title">성격 유형</div>
+      <p>의사소통, 대인관계, 진로·적성을<br>아우르는 심층 분석</p>
+    </div>
+    <div class="intro-card">
+      <div class="intro-card-num">3</div>
+      <div class="intro-card-title">일 보관</div>
+      <p>이름으로 검색 시<br>3일 이내 결과 재확인 가능</p>
+    </div>
+    <div class="intro-card">
+      <div class="intro-card-num">∞</div>
+      <div class="intro-card-title">시각화</div>
+      <p>4가지 축의 점수를<br>막대 그래프로 한눈에</p>
+    </div>
+  </div>
+
+  <!-- 이름 입력 -->
+  <div class="name-section">
+    <div class="section-label">이름 입력</div>
+    <div class="name-row">
+      <input class="name-input" type="text" id="nameInput" placeholder="성함을 입력하세요" autocomplete="off">
+      <button class="btn-search" onclick="searchPrevious()">검색</button>
+    </div>
   </div>
 
   <!-- 경고 메시지 -->
-  <div id="searchWarningBox" class="warning"><span id="searchWarningText"></span></div>
+  <div class="warning-bar" id="searchWarningBox"></div>
 
-  <!-- 이름 입력 + 검색 -->
-  <p>
-    이름: <input type="text" id="nameInput" placeholder="이름을 입력하세요" autocomplete="off">
-    <button onclick="searchPrevious()">검색</button>
-  </p>
-
-  <!-- 검색 결과 -->
+  <!-- 검색 결과 / 확인 다이얼로그 -->
   <div id="searchResponse"></div>
 
-  <!-- 로딩 스피너 -->
-  <div id="spinner">⏳ 잠시만 기다려 주세요...</div>
+  <!-- 스피너 -->
+  <div id="spinner">
+    <div class="spinner-ring"></div>
+    <div class="spinner-text">불러오는 중</div>
+  </div>
+
+  <!-- 진행 바 -->
+  <div class="progress-wrap" id="progressWrap" style="display:none;">
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-text" id="progressText">0 / 66</div>
+  </div>
+
+  <!-- 문항 구분 헤더 -->
+  <div class="questions-header" id="questionsHeader" style="display:none;">
+    <div class="questions-header-line"></div>
+    <div class="questions-header-text">검사 문항</div>
+    <div class="questions-header-line"></div>
+  </div>
 
   <!-- 문항 폼 -->
   <form id="mbtiForm"></form>
 
   <!-- 미응답 경고 -->
-  <div class="warning" id="answerWarningBox">
-    <span id="answerWarningText"></span>
+  <div class="warning-bar" id="answerWarningBox"></div>
+
+  <!-- 제출 버튼 -->
+  <div class="submit-wrap" id="submitWrap">
+    <button class="btn-submit" id="submitBtn" onclick="submitAnswers()">
+      <span>결과 보기</span>
+    </button>
   </div>
 
-  <!-- 결과 보기 버튼 -->
-  <button id="submitBtn" class="btn-submit" onclick="submitAnswers()">결과 보기</button>
+  <!-- ══════════════════════ 결과 섹션 ══════════════════════ -->
+  <div id="resultSection">
+    <div class="result-header">
+      <div class="result-eyebrow">당신의 성격 유형</div>
+      <div class="result-mbti-type" id="mbtiTypeDisplay"></div>
+      <div class="result-alias" id="mbtiAlias"></div>
+      <div class="result-keyword" id="mbtiKeywords"></div>
+    </div>
 
-  <!-- 결과 출력 영역 -->
-  <div id="resultSection" style="display:none;">
-    <h3 id="mbtiTitle"></h3>
-    <h4 id="mbtiSubtitle"></h4>
-    <div id="resultTable"></div>
-    <br>
-    <canvas id="mbtiChart" width="400" height="300"></canvas>
-    <br><br>
-    <button onclick="location.reload()">🔁 나가기</button>
+    <div class="chart-section">
+      <div class="chart-title">성격 축별 점수 비교</div>
+      <canvas id="mbtiChart"></canvas>
+    </div>
+
+    <div class="result-fields" id="resultFields"></div>
+
+    <button class="btn-restart" onclick="location.reload()">처음으로 돌아가기</button>
   </div>
+
+</div><!-- /container -->
 
 <script>
-  // ✅ Firebase Cloud Functions 베이스 URL — 배포 후 실제 프로젝트 URL로 교체
   const FN = "https://us-central1-mbti-project-cb2a0.cloudfunctions.net";
 
-  let questionData = [], answers = {}, currentUserName = "", lastSearchResult = null;
-  let chartInstance = null;
+  let questionData = [], answers = {}, lastSearchResult = null, chartInst = null;
 
-  // ── 공통 API 호출 래퍼 ──────────────────────────────────────────────────────
+  // ── API 래퍼 ──────────────────────────────────────────────
   async function api(endpoint, body) {
-    const res = await fetch(`${FN}/${endpoint}`, {
+    const r = await fetch(`${FN}/${endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "서버 오류");
-    return data;
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || "서버 오류");
+    return d;
   }
 
-  // ── 경고 메시지 ─────────────────────────────────────────────────────────────
-  function showWarning(msg) {
-    const box = document.getElementById("searchWarningBox");
-    document.getElementById("searchWarningText").textContent = msg;
-    box.style.display = "block";
-    setTimeout(() => box.style.display = "none", 4000);
+  // ── 경고 표시 ─────────────────────────────────────────────
+  function showWarning(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.style.display = "block";
+    if (id === "searchWarningBox") setTimeout(() => el.style.display = "none", 4000);
   }
 
+  // ── 스피너 ───────────────────────────────────────────────
   function setSpinner(on) {
     document.getElementById("spinner").style.display = on ? "block" : "none";
     document.getElementById("mbtiForm").style.display = on ? "none" : "block";
-    document.getElementById("submitBtn").style.display = on ? "none" : "block";
+    document.getElementById("submitWrap").style.display = on ? "none" : "block";
+    if (!on && questionData.length) {
+      document.getElementById("progressWrap").style.display = "block";
+      document.getElementById("questionsHeader").style.display = "flex";
+    }
   }
 
-  // ── 페이지 로드 시 문항 불러오기 ────────────────────────────────────────────
+  // ── 진행도 업데이트 ───────────────────────────────────────
+  function updateProgress() {
+    const done = Object.keys(answers).length;
+    const total = questionData.length;
+    const pct = total ? done / total : 0;
+    document.getElementById("progressFill").style.transform = `scaleX(${pct})`;
+    document.getElementById("progressText").textContent = `${done} / ${total}`;
+  }
+
+  // ── 문항 로드 ─────────────────────────────────────────────
   window.onload = async () => {
     setSpinner(true);
     try {
@@ -209,7 +679,7 @@
     }
   };
 
-  // ── 문항 렌더링 ─────────────────────────────────────────────────────────────
+  // ── 문항 렌더링 ───────────────────────────────────────────
   function renderQuestions(data) {
     questionData = data;
     const form = document.getElementById("mbtiForm");
@@ -218,169 +688,175 @@
       const div = document.createElement("div");
       div.className = "question";
       div.innerHTML = `
-        <p>${i + 1}. ${q.text}</p>
-        <button type="button" class="btn-choice" onclick="selectAnswer('${q.id}','${q.code1}',this)">${q.a}</button>
-        <button type="button" class="btn-choice" onclick="selectAnswer('${q.id}','${q.code2}',this)">${q.b}</button>
-      `;
+        <div class="q-meta">
+          <div class="q-num">${String(i+1).padStart(2,'0')}</div>
+          <div class="q-text">${q.text}</div>
+        </div>
+        <div class="q-choices">
+          <button type="button" class="btn-choice" onclick="selectAnswer('${q.id}','${q.code1}',this)"><span>${q.a}</span></button>
+          <button type="button" class="btn-choice" onclick="selectAnswer('${q.id}','${q.code2}',this)"><span>${q.b}</span></button>
+        </div>`;
       form.appendChild(div);
     });
   }
 
-  // ── 선택 기록 ───────────────────────────────────────────────────────────────
+  // ── 선택 ──────────────────────────────────────────────────
   function selectAnswer(qid, code, btn) {
     answers[qid] = code;
-    btn.parentElement.querySelectorAll(".btn-choice").forEach(b => b.classList.remove("selected"));
+    btn.closest(".q-choices").querySelectorAll(".btn-choice").forEach(b => b.classList.remove("selected"));
     btn.classList.add("selected");
+    updateProgress();
   }
 
-  // ── 이름 검색 (기존 결과 조회) ──────────────────────────────────────────────
+  // ── 이름 검색 ─────────────────────────────────────────────
   async function searchPrevious() {
     const name = document.getElementById("nameInput").value.trim();
-    if (!name) return showWarning("이름을 입력해주세요.");
-    currentUserName = name;
-
+    if (!name) return showWarning("searchWarningBox", "이름을 입력해주세요.");
     const box = document.getElementById("searchResponse");
-    box.innerHTML = "<p style='color:#888;'>🔍 검색 중...</p>";
+    box.innerHTML = `<div style="font-size:13px;color:var(--dim);padding:12px 0;">검색 중…</div>`;
     try {
       const data = await api("loadPreviousResult", { name });
       lastSearchResult = data.found ? data.result : null;
-
       if (data.found) {
-        box.innerHTML = `
-          <div class='confirm-box'>
-            이전에 검사를 했습니다. 결과를 보시겠습니까?<br><br>
-            <button onclick='confirmLoad(true)'>예</button>
-            <button onclick='confirmLoad(false)' style='background:#6c757d;'>아니오</button>
-          </div>`;
+        box.innerHTML = `<div class="confirm-box">
+          <p>이전 검사 기록이 있습니다.<br>결과를 바로 보시겠습니까?</p>
+          <div class="confirm-btns">
+            <button class="btn-yes" onclick="confirmLoad(true)">예, 결과 보기</button>
+            <button class="btn-no" onclick="confirmLoad(false)">새로 검사하기</button>
+          </div></div>`;
       } else {
-        box.innerHTML = `
-          <div class='confirm-box'>
-            검사를 진행하시겠습니까?<br><br>
-            <button onclick='confirmLoad(true, true)'>예</button>
-            <button onclick='confirmLoad(false)' style='background:#6c757d;'>아니오</button>
-          </div>`;
+        box.innerHTML = `<div class="confirm-box">
+          <p>기존 기록이 없습니다.<br>지금 바로 검사를 시작하시겠습니까?</p>
+          <div class="confirm-btns">
+            <button class="btn-yes" onclick="confirmLoad(true,true)">예, 시작하기</button>
+            <button class="btn-no" onclick="confirmLoad(false)">취소</button>
+          </div></div>`;
       }
-    } catch (e) {
-      box.innerHTML = `<p style='color:red;'>오류: ${e.message}</p>`;
+    } catch(e) {
+      box.innerHTML = `<div style="color:#e8a87c;font-size:13px;padding:12px 0;">오류: ${e.message}</div>`;
     }
   }
 
   function confirmLoad(ok, isNew = false) {
+    document.getElementById("searchResponse").innerHTML = "";
     if (ok && lastSearchResult) {
-      document.getElementById("searchResponse").innerHTML = "";
       renderResult(lastSearchResult);
-    } else if (ok && isNew) {
-      document.getElementById("searchResponse").innerHTML = "";
-    } else {
+    } else if (!ok) {
       location.reload();
     }
+    // ok && isNew → 그냥 진행
   }
 
-  // ── 결과 저장 + 출력 ────────────────────────────────────────────────────────
+  // ── 응답 제출 ─────────────────────────────────────────────
   async function submitAnswers() {
     const name = document.getElementById("nameInput").value.trim();
-    if (!name) return showWarning("이름을 입력해주세요.");
-    currentUserName = name;
+    if (!name) return showWarning("searchWarningBox", "이름을 입력해주세요.");
 
-    // 미응답 체크
     const unanswered = questionData.filter(q => !answers[q.id]);
     if (unanswered.length) {
-      const missing = unanswered.map(q => q.id).join(", ");
-      document.getElementById("answerWarningBox").style.display = "block";
-      document.getElementById("answerWarningText").innerText =
-        `다음 문항이 입력되지 않았습니다: ${missing}. 문항을 모두 입력해야 결과를 확인할 수 있습니다.`;
+      showWarning("answerWarningBox",
+        `${unanswered.length}개 문항이 선택되지 않았습니다: ${unanswered.map(q=>q.id).join(", ")}`);
       return;
     }
     document.getElementById("answerWarningBox").style.display = "none";
 
-    const submitBtn = document.getElementById("submitBtn");
-    submitBtn.disabled = true;
-    submitBtn.textContent = "저장 중...";
-
+    const btn = document.getElementById("submitBtn");
+    btn.disabled = true;
+    btn.querySelector("span").textContent = "분석 중…";
     try {
       const desc = await api("saveAnswers", { name, answers });
       renderResult(desc);
-      setTimeout(() => document.getElementById("resultSection").scrollIntoView({ behavior: "smooth" }), 300);
-    } catch (e) {
+    } catch(e) {
       alert("오류: " + e.message);
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = "결과 보기";
+      btn.disabled = false;
+      btn.querySelector("span").textContent = "결과 보기";
     }
   }
 
-  // ── 결과 렌더링 ─────────────────────────────────────────────────────────────
+  // ── 결과 렌더링 ───────────────────────────────────────────
   function renderResult(desc) {
-    if (!desc || !desc["MBTI 유형"]) {
-      alert("결과 데이터를 불러올 수 없습니다.");
-      return;
-    }
+    if (!desc || !desc["MBTI 유형"]) { alert("결과를 불러올 수 없습니다."); return; }
+
+    // 폼 숨기기
+    document.getElementById("mbtiForm").style.display = "none";
+    document.getElementById("submitWrap").style.display = "none";
+    document.getElementById("progressWrap").style.display = "none";
+    document.getElementById("questionsHeader").style.display = "none";
+    document.querySelector(".intro-cards").style.display = "none";
+    document.querySelector(".name-section").style.display = "none";
+    document.getElementById("searchResponse").innerHTML = "";
+
+    // MBTI 유형 대문자 컬러 표시
+    const type = desc["MBTI 유형"];
+    document.getElementById("mbtiTypeDisplay").innerHTML =
+      type.split("").map(l => `<span class="mbti-letter">${l}</span>`).join("");
+
+    document.getElementById("mbtiAlias").textContent =
+      `"${desc["별칭(일반적 특징)"] || ""}"`;
+
+    const kws = (desc["키워드"] || "").split(/[,·]/).map(k=>k.trim()).filter(Boolean);
+    document.getElementById("mbtiKeywords").innerHTML =
+      kws.map(k=>`<span class="kw-tag">${k}</span>`).join("");
+
+    // 차트
+    drawChart(desc);
+
+    // 상세 필드
+    const fields = [
+      "공통점","속담/격언","싫어하는 말","자주 듣는 말",
+      "장점","단점","의사소통 스타일","리더십 스타일",
+      "진로 및 직업 추천","인간관계 스타일","스트레스 반응","성장 전략"
+    ];
+    document.getElementById("resultFields").innerHTML =
+      fields.map(k=>`
+        <div class="field-row">
+          <div class="field-key">${k}</div>
+          <div class="field-val">${desc[k] || "–"}</div>
+        </div>`).join("");
 
     document.getElementById("resultSection").style.display = "block";
-    document.getElementById("mbtiTitle").innerHTML =
-      `당신의 성격 분석 유형: <span style='color:#007BFF'>${getCustomMbtiName(desc["MBTI 유형"])}</span>`;
-    document.getElementById("mbtiSubtitle").innerHTML =
-      `"${desc["별칭(일반적 특징)"]}" – <em>${desc["키워드"]}</em>`;
-
-    const fields = [
-      "공통점", "속담/격언", "싫어하는 말", "자주 듣는 말",
-      "장점", "단점", "의사소통 스타일", "리더십 스타일",
-      "진로 및 직업 추천", "인간관계 스타일", "스트레스 반응", "성장 전략"
-    ];
-    let table = "<table style='width:100%; border-collapse:collapse; border:1px solid #ccc;'>";
-    fields.forEach(k => {
-      table += `
-        <tr>
-          <th style="width:22%; padding:10px; text-align:center; vertical-align:top; background:#f0f8ff; border:1px solid #ccc;">${k}</th>
-          <td style="padding:10px; text-align:left; border:1px solid #ccc;">${desc[k] || "-"}</td>
-        </tr>`;
-    });
-    table += "</table>";
-    document.getElementById("resultTable").innerHTML = table;
-
-    drawChart(desc);
-    setTimeout(() => document.getElementById("resultSection").scrollIntoView({ behavior: "smooth" }), 300);
+    setTimeout(() => document.getElementById("resultSection").scrollIntoView({ behavior:"smooth" }), 100);
   }
 
-  // ── 막대그래프 ──────────────────────────────────────────────────────────────
+  // ── 차트 ──────────────────────────────────────────────────
   function drawChart(desc) {
-    if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+    if (chartInst) { chartInst.destroy(); chartInst = null; }
+    Chart.defaults.color = "rgba(245,240,232,0.5)";
     const ctx = document.getElementById("mbtiChart").getContext("2d");
-    chartInstance = new Chart(ctx, {
+    chartInst = new Chart(ctx, {
       type: "bar",
       data: {
-        labels: ["사회적/내적 에너지 (E-I)", "현실/직관 정보처리 (S-N)", "논리/감성 의사결정 (T-F)", "계획/즉흥 생활방식 (J-P)"],
+        labels: ["에너지 (E·I)", "인식 (S·N)", "판단 (T·F)", "생활 (J·P)"],
         datasets: [
-          { label: "첫 글자 (E/S/T/J)", data: [desc.E, desc.S, desc.T, desc.J], backgroundColor: "#007BFF" },
-          { label: "두 번째 글자 (I/N/F/P)", data: [desc.I, desc.N, desc.F, desc.P], backgroundColor: "#f39c12" }
+          {
+            label: "E / S / T / J",
+            data: [desc.E, desc.S, desc.T, desc.J],
+            backgroundColor: "rgba(201,168,76,0.7)",
+            borderColor: "rgba(201,168,76,1)",
+            borderWidth: 1
+          },
+          {
+            label: "I / N / F / P",
+            data: [desc.I, desc.N, desc.F, desc.P],
+            backgroundColor: "rgba(232,213,163,0.3)",
+            borderColor: "rgba(232,213,163,0.7)",
+            borderWidth: 1
+          }
         ]
       },
       options: {
+        responsive: true,
         plugins: {
-          legend: { position: "top" },
-          title: { display: true, text: "성격분석 축별 점수 비교" }
+          legend: { position:"top", labels:{ font:{ family:"Noto Serif KR", size:12 }, color:"rgba(245,240,232,0.6)", boxWidth:14 } },
+          title:  { display:false }
         },
-        scales: { y: { beginAtZero: true } }
+        scales: {
+          x: { grid:{ color:"rgba(245,240,232,0.05)" }, ticks:{ font:{ family:"Noto Serif KR" } } },
+          y: { beginAtZero:true, grid:{ color:"rgba(245,240,232,0.05)" }, ticks:{ font:{ family:"Noto Serif KR" } } }
+        }
       }
     });
   }
-
-  // ── MBTI 유형 이름 풀어쓰기 ─────────────────────────────────────────────────
-  function getCustomMbtiName(type) {
-    const typeNames = {
-      "INFJ": "INFJ, 창의적 통찰형", "INFP": "INFP, 자유로운 사색형",
-      "ENFJ": "ENFJ, 영감을 주는 리더형", "ENFP": "ENFP, 열정적인 탐험형",
-      "INTJ": "INTJ, 분석적 전략형", "INTP": "INTP, 논리적 혁신형",
-      "ENTJ": "ENTJ, 결단력 있는 혁신형", "ENTP": "ENTP, 창의적 개척형",
-      "ISFJ": "ISFJ, 보호적인 돌봄형", "ISFP": "ISFP, 감성적 표현형",
-      "ESFJ": "ESFJ, 사교적인 조화형", "ESFP": "ESFP, 자유로운 즐거움형",
-      "ISTJ": "ISTJ, 책임감 있는 현실형", "ISTP": "ISTP, 실용적인 해결형",
-      "ESTJ": "ESTJ, 체계적인 지휘형", "ESTP": "ESTP, 모험적인 실용형"
-    };
-    return typeNames[type] || type;
-  }
 </script>
-</body>
-</html>
 </body>
 </html>
