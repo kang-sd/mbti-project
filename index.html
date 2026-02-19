@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -8,518 +9,189 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --ink:    #0d0d0d;
-      --cream:  #f5f0e8;
-      --gold:   #c9a84c;
-      --gold2:  #e8d5a3;
-      --rust:   #8b4513;
-      --mist:   #e8e4dc;
-      --dim:    #6b6560;
-      --white:  #fdfaf5;
+      --bg:      #faf8f4;
+      --surface: #ffffff;
+      --ink:     #1a1612;
+      --ink2:    #4a4540;
+      --gold:    #b8903a;
+      --gold2:   #d4aa5a;
+      --gold-bg: #fdf6e9;
+      --border:  #e8e2d8;
+      --accent:  #8b6914;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--ink); font-family: 'Noto Serif KR', serif; min-height: 100vh; }
 
-    body {
-      background: var(--ink);
-      color: var(--cream);
-      font-family: 'Noto Serif KR', serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+    .top-bar { height: 4px; background: linear-gradient(90deg, var(--gold), var(--gold2), var(--gold)); }
+    .container { max-width: 780px; margin: 0 auto; padding: 0 24px 80px; }
 
-    /* ── 배경 질감 ── */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(201,168,76,0.08) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 80% at 80% 90%, rgba(139,69,19,0.06) 0%, transparent 60%),
-        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .container {
-      position: relative;
-      z-index: 1;
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 0 24px 80px;
-    }
-
-    /* ── 헤더 ── */
-    .header {
-      text-align: center;
-      padding: 60px 0 50px;
-      animation: fadeDown 1s ease both;
-    }
-    .header-eyebrow {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 11px;
-      letter-spacing: 5px;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 16px;
-    }
-    .header h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(52px, 10vw, 88px);
-      font-weight: 300;
-      font-style: italic;
-      color: var(--cream);
-      line-height: 0.9;
-      letter-spacing: -2px;
-    }
+    /* 헤더 */
+    .header { text-align: center; padding: 52px 0 44px; animation: fadeDown 0.8s ease both; }
+    .header-eyebrow { font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; }
+    .header h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(48px, 10vw, 84px); font-weight: 300; font-style: italic; color: var(--ink); line-height: 0.95; letter-spacing: -2px; }
     .header h1 span { color: var(--gold); }
-    .header-rule {
-      width: 60px;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-      margin: 24px auto 20px;
-    }
-    .header-sub {
-      font-size: 13px;
-      color: var(--dim);
-      letter-spacing: 1px;
-    }
+    .header-rule { width: 50px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 22px auto 18px; }
+    .header-sub { font-size: 13px; color: var(--ink2); }
 
-    /* ── 안내 카드 ── */
-    .intro-cards {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1px;
-      background: rgba(201,168,76,0.2);
-      border: 1px solid rgba(201,168,76,0.2);
-      margin-bottom: 48px;
-      animation: fadeUp 1s 0.3s ease both;
-    }
-    .intro-card {
-      background: rgba(13,13,13,0.9);
-      padding: 28px 24px;
-    }
-    .intro-card-num {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 36px;
-      font-weight: 300;
-      color: rgba(201,168,76,0.3);
-      line-height: 1;
-      margin-bottom: 8px;
-    }
-    .intro-card-title {
-      font-size: 11px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 10px;
-    }
-    .intro-card p {
-      font-size: 13px;
-      color: var(--dim);
-      line-height: 1.7;
-    }
+    /* 안내 카드 */
+    .intro-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 44px; animation: fadeUp 0.8s 0.2s ease both; }
+    .intro-card { background: var(--surface); padding: 24px 18px; text-align: center; }
+    .intro-card-num { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 300; color: var(--gold); line-height: 1; margin-bottom: 6px; }
+    .intro-card-title { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+    .intro-card p { font-size: 12px; color: var(--ink2); line-height: 1.6; }
 
-    /* ── 이름 입력 섹션 ── */
-    .name-section {
-      animation: fadeUp 1s 0.5s ease both;
-      margin-bottom: 40px;
-    }
-    .section-label {
-      font-size: 10px;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 12px;
-    }
-    .name-row {
-      display: flex;
-      gap: 12px;
-      align-items: stretch;
-    }
-    .name-input {
-      flex: 1;
-      background: rgba(245,240,232,0.04);
-      border: 1px solid rgba(201,168,76,0.3);
-      color: var(--cream);
-      font-family: 'Noto Serif KR', serif;
-      font-size: 16px;
-      padding: 16px 20px;
-      outline: none;
-      transition: border-color 0.3s, background 0.3s;
-    }
-    .name-input:focus {
-      border-color: var(--gold);
-      background: rgba(201,168,76,0.06);
-    }
-    .name-input::placeholder { color: rgba(245,240,232,0.2); }
-    .btn-search {
-      background: transparent;
-      border: 1px solid rgba(201,168,76,0.5);
-      color: var(--gold);
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 14px;
-      letter-spacing: 2px;
-      padding: 16px 28px;
-      cursor: pointer;
-      transition: all 0.3s;
-      white-space: nowrap;
-    }
-    .btn-search:hover {
-      background: var(--gold);
-      color: var(--ink);
-    }
+    /* 이름 입력 */
+    .name-section { margin-bottom: 36px; animation: fadeUp 0.8s 0.3s ease both; }
+    .section-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+    .name-row { display: flex; gap: 10px; }
+    .name-input { flex: 1; background: var(--surface); border: 1px solid var(--border); color: var(--ink); font-family: 'Noto Serif KR', serif; font-size: 16px; padding: 14px 18px; outline: none; transition: border-color 0.25s; }
+    .name-input:focus { border-color: var(--gold); }
+    .name-input::placeholder { color: #bbb; }
+    .btn-search { background: var(--surface); border: 1px solid var(--gold); color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 15px; letter-spacing: 2px; padding: 14px 26px; cursor: pointer; transition: all 0.25s; white-space: nowrap; }
+    .btn-search:hover { background: var(--gold); color: #fff; }
 
-    /* ── 확인 다이얼로그 ── */
-    .confirm-box {
-      background: rgba(201,168,76,0.06);
-      border: 1px solid rgba(201,168,76,0.25);
-      padding: 24px 28px;
-      margin-bottom: 32px;
-      animation: fadeUp 0.4s ease both;
-    }
-    .confirm-box p {
-      font-size: 15px;
-      color: var(--cream);
-      margin-bottom: 18px;
-      line-height: 1.6;
-    }
+    /* 확인 다이얼로그 */
+    .confirm-box { background: var(--gold-bg); border: 1px solid rgba(184,144,58,0.3); padding: 22px 24px; margin-bottom: 28px; animation: fadeUp 0.3s ease; }
+    .confirm-box p { font-size: 15px; color: var(--ink); margin-bottom: 16px; line-height: 1.7; }
     .confirm-btns { display: flex; gap: 10px; }
-    .btn-yes {
-      background: var(--gold);
-      border: none;
-      color: var(--ink);
-      font-family: 'Noto Serif KR', serif;
-      font-size: 14px;
-      padding: 12px 28px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: opacity 0.2s;
-    }
+    .btn-yes { background: var(--gold); border: none; color: #fff; font-family: 'Noto Serif KR', serif; font-size: 14px; padding: 11px 26px; cursor: pointer; transition: opacity 0.2s; }
     .btn-yes:hover { opacity: 0.85; }
-    .btn-no {
-      background: transparent;
-      border: 1px solid rgba(245,240,232,0.2);
-      color: var(--dim);
-      font-family: 'Noto Serif KR', serif;
-      font-size: 14px;
-      padding: 12px 28px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-no:hover { border-color: var(--cream); color: var(--cream); }
+    .btn-no { background: transparent; border: 1px solid var(--border); color: var(--ink2); font-family: 'Noto Serif KR', serif; font-size: 14px; padding: 11px 26px; cursor: pointer; transition: all 0.2s; }
+    .btn-no:hover { border-color: var(--ink2); color: var(--ink); }
 
-    /* ── 문항 구분선 헤더 ── */
-    .questions-header {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      margin-bottom: 32px;
-      animation: fadeUp 1s 0.7s ease both;
-    }
-    .questions-header-line { flex: 1; height: 1px; background: rgba(201,168,76,0.2); }
-    .questions-header-text {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 12px;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: var(--gold);
-      white-space: nowrap;
-    }
+    /* 진행 바 */
+    .progress-wrap { position: sticky; top: 0; z-index: 10; background: var(--bg); padding: 10px 0 14px; border-bottom: 1px solid var(--border); margin-bottom: 8px; display: none; }
+    .progress-bar-bg { height: 2px; background: var(--border); position: relative; }
+    .progress-bar-fill { position: absolute; inset: 0; background: linear-gradient(90deg, var(--gold), var(--gold2)); transform-origin: left; transform: scaleX(0); transition: transform 0.3s ease; }
+    .progress-text { font-size: 11px; letter-spacing: 1px; color: var(--ink2); text-align: right; margin-top: 6px; }
 
-    /* ── 문항 ── */
-    #mbtiForm { animation: fadeUp 1s 0.8s ease both; }
-    .question {
-      border-bottom: 1px solid rgba(245,240,232,0.07);
-      padding: 28px 0;
-      transition: background 0.2s;
-    }
-    .question:hover { background: rgba(201,168,76,0.02); }
-    .q-meta {
-      display: flex;
-      align-items: baseline;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-    .q-num {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 13px;
-      color: rgba(201,168,76,0.5);
-      min-width: 30px;
-    }
-    .q-text {
-      font-size: 16px;
-      color: var(--cream);
-      line-height: 1.6;
-      font-weight: 300;
-    }
-    .q-choices { display: flex; gap: 10px; padding-left: 42px; flex-wrap: wrap; }
-    .btn-choice {
-      background: rgba(245,240,232,0.03);
-      border: 1px solid rgba(245,240,232,0.12);
-      color: rgba(245,240,232,0.55);
-      font-family: 'Noto Serif KR', serif;
-      font-size: 14px;
-      padding: 12px 24px;
-      cursor: pointer;
-      transition: all 0.25s;
-      position: relative;
-      overflow: hidden;
-    }
-    .btn-choice::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--gold);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.25s ease;
-      z-index: 0;
-    }
-    .btn-choice span { position: relative; z-index: 1; }
-    .btn-choice:hover {
-      border-color: rgba(201,168,76,0.5);
-      color: var(--cream);
-    }
-    .btn-choice.selected {
-      border-color: var(--gold);
-      color: var(--ink);
-    }
-    .btn-choice.selected::before { transform: scaleX(1); }
-    .btn-choice.selected span { color: var(--ink); font-weight: 600; }
+    /* 문항 구분선 */
+    .questions-header { display: none; align-items: center; gap: 18px; margin-bottom: 8px; }
+    .questions-header-line { flex: 1; height: 1px; background: var(--border); }
+    .questions-header-text { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); }
 
-    /* ── 경고 ── */
-    .warning-bar {
-      background: rgba(139,69,19,0.15);
-      border-left: 3px solid var(--rust);
-      color: #e8a87c;
-      padding: 14px 20px;
-      font-size: 13px;
-      margin: 16px 0;
-      display: none;
-      line-height: 1.6;
-    }
+    /* 문항 */
+    #mbtiForm { animation: fadeUp 0.8s 0.4s ease both; }
+    .question { border-bottom: 1px solid var(--border); padding: 24px 0; }
+    .question:last-child { border-bottom: none; }
+    .q-meta { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+    .q-num { font-family: 'Cormorant Garamond', serif; font-size: 13px; color: var(--gold); min-width: 28px; opacity: 0.6; }
+    .q-text { font-size: 15px; color: var(--ink); line-height: 1.65; }
+    .q-choices { display: flex; gap: 10px; padding-left: 40px; flex-wrap: wrap; }
+    .btn-choice { background: var(--surface); border: 1px solid var(--border); color: var(--ink2); font-family: 'Noto Serif KR', serif; font-size: 14px; padding: 11px 22px; cursor: pointer; transition: all 0.2s; }
+    .btn-choice:hover { border-color: var(--gold2); color: var(--ink); background: var(--gold-bg); }
+    .btn-choice.selected { background: var(--gold); border-color: var(--gold); color: #fff; font-weight: 600; }
 
-    /* ── 제출 버튼 ── */
-    .submit-wrap {
-      padding: 48px 0 0;
-      text-align: center;
-    }
-    .btn-submit {
-      position: relative;
-      background: transparent;
-      border: 1px solid var(--gold);
-      color: var(--gold);
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 18px;
-      letter-spacing: 4px;
-      padding: 20px 60px;
-      cursor: pointer;
-      overflow: hidden;
-      transition: color 0.4s;
-      width: 100%;
-      max-width: 400px;
-    }
-    .btn-submit::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--gold);
-      transform: scaleY(0);
-      transform-origin: bottom;
-      transition: transform 0.4s ease;
-      z-index: 0;
-    }
-    .btn-submit:hover { color: var(--ink); }
-    .btn-submit:hover::before { transform: scaleY(1); }
-    .btn-submit span { position: relative; z-index: 1; }
-    .btn-submit:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-    .btn-submit:disabled::before { display: none; }
+    /* 경고 */
+    .warning-bar { background: #fff5f5; border-left: 3px solid #e05252; color: #b83232; padding: 12px 18px; font-size: 13px; margin: 12px 0; display: none; line-height: 1.6; }
 
-    /* ── 스피너 ── */
-    #spinner {
-      display: none;
-      text-align: center;
-      padding: 60px 0;
-    }
-    .spinner-ring {
-      width: 48px;
-      height: 48px;
-      border: 1px solid rgba(201,168,76,0.2);
-      border-top-color: var(--gold);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 16px;
-    }
-    .spinner-text {
-      font-size: 12px;
-      letter-spacing: 3px;
-      color: var(--dim);
-      text-transform: uppercase;
-    }
+    /* 제출 버튼 */
+    .submit-wrap { padding: 40px 0 0; text-align: center; }
+    .btn-submit { background: var(--gold); border: none; color: #fff; font-family: 'Cormorant Garamond', serif; font-size: 18px; letter-spacing: 3px; padding: 18px 60px; cursor: pointer; width: 100%; max-width: 380px; transition: background 0.25s, transform 0.15s; }
+    .btn-submit:hover { background: var(--accent); transform: translateY(-1px); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-    /* ── 결과 섹션 ── */
-    #resultSection {
-      display: none;
-      animation: fadeUp 0.8s ease both;
-    }
-    .result-header {
-      text-align: center;
-      padding: 60px 0 48px;
-      border-bottom: 1px solid rgba(201,168,76,0.2);
-      margin-bottom: 48px;
-    }
-    .result-eyebrow {
-      font-size: 10px;
-      letter-spacing: 5px;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 24px;
-    }
-    .result-mbti-type {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(60px, 15vw, 120px);
-      font-weight: 300;
-      color: var(--cream);
-      line-height: 1;
-      letter-spacing: -3px;
-    }
-    .result-mbti-type .mbti-letter { color: var(--gold); }
-    .result-alias {
-      font-size: 15px;
-      color: var(--dim);
-      margin-top: 20px;
-      font-style: italic;
-      line-height: 1.6;
-    }
-    .result-keyword {
-      margin-top: 16px;
-      display: inline-flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .kw-tag {
-      font-size: 11px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--gold);
-      border: 1px solid rgba(201,168,76,0.3);
-      padding: 5px 14px;
-    }
+    /* 스피너 */
+    #spinner { display: none; text-align: center; padding: 60px 0; }
+    .spinner-ring { width: 44px; height: 44px; border: 2px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 14px; }
+    .spinner-text { font-size: 12px; letter-spacing: 2px; color: var(--ink2); text-transform: uppercase; }
 
-    /* ── 차트 섹션 ── */
-    .chart-section {
-      margin-bottom: 48px;
-      padding: 32px;
-      border: 1px solid rgba(201,168,76,0.15);
-      background: rgba(201,168,76,0.02);
-    }
-    .chart-title {
-      font-size: 10px;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 24px;
-      text-align: center;
-    }
+    /* 결과 섹션 */
+    #resultSection { display: none; animation: fadeUp 0.7s ease both; }
+    .result-header { text-align: center; padding: 56px 0 44px; border-bottom: 1px solid var(--border); margin-bottom: 44px; }
+    .result-eyebrow { font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); margin-bottom: 22px; }
+    .result-mbti-type { font-family: 'Cormorant Garamond', serif; font-size: clamp(64px, 16vw, 112px); font-weight: 300; color: var(--ink); line-height: 1; letter-spacing: -2px; }
+    .mbti-letter { color: var(--gold); }
+    .result-alias { font-size: 15px; color: var(--ink2); margin-top: 18px; font-style: italic; line-height: 1.6; }
+    .result-keyword { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+    .kw-tag { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); border: 1px solid rgba(184,144,58,0.4); background: var(--gold-bg); padding: 5px 14px; }
 
-    /* ── 결과 테이블 ── */
-    .result-fields { margin-bottom: 48px; }
-    .field-row {
-      display: grid;
-      grid-template-columns: 140px 1fr;
-      border-bottom: 1px solid rgba(245,240,232,0.06);
-    }
-    .field-row:first-child { border-top: 1px solid rgba(245,240,232,0.06); }
-    .field-key {
-      padding: 20px 16px 20px 0;
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--gold);
-      line-height: 1.6;
-      border-right: 1px solid rgba(201,168,76,0.15);
-    }
-    .field-val {
-      padding: 20px 0 20px 24px;
-      font-size: 14px;
-      color: rgba(245,240,232,0.75);
-      line-height: 1.8;
-    }
+    /* 차트 */
+    .chart-section { background: var(--surface); border: 1px solid var(--border); padding: 28px 28px 24px; margin-bottom: 40px; }
+    .chart-title { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; text-align: center; }
 
-    /* ── 다시 하기 버튼 ── */
-    .btn-restart {
-      display: block;
-      width: 100%;
-      max-width: 300px;
-      margin: 0 auto;
-      background: transparent;
-      border: 1px solid rgba(245,240,232,0.15);
-      color: var(--dim);
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 14px;
-      letter-spacing: 3px;
-      padding: 16px;
-      cursor: pointer;
-      text-transform: uppercase;
-      transition: all 0.3s;
-    }
-    .btn-restart:hover { border-color: var(--cream); color: var(--cream); }
+    /* 결과 테이블 */
+    .result-fields { border: 1px solid var(--border); margin-bottom: 40px; background: var(--surface); }
+    .field-row { display: grid; grid-template-columns: 150px 1fr; border-bottom: 1px solid var(--border); }
+    .field-row:last-child { border-bottom: none; }
+    .field-key { padding: 18px 16px 18px 20px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); background: var(--gold-bg); border-right: 1px solid var(--border); display: flex; align-items: center; line-height: 1.5; }
+    .field-val { padding: 18px 20px; font-size: 14px; color: var(--ink2); line-height: 1.85; }
 
-    /* ── 진행 표시 바 ── */
-    .progress-wrap {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      padding: 12px 0;
-      background: linear-gradient(var(--ink), transparent);
-    }
-    .progress-bar-bg {
-      height: 1px;
-      background: rgba(245,240,232,0.08);
-      position: relative;
-    }
-    .progress-bar-fill {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg, var(--gold), var(--gold2));
-      transform-origin: left;
-      transform: scaleX(0);
-      transition: transform 0.3s ease;
-    }
-    .progress-text {
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: var(--dim);
-      text-align: right;
-      margin-top: 6px;
-    }
+    /* 하단 버튼 */
+    .result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-print { background: var(--gold); border: none; color: #fff; font-family: 'Noto Serif KR', serif; font-size: 15px; padding: 16px 36px; cursor: pointer; transition: background 0.2s, transform 0.15s; display: flex; align-items: center; gap: 8px; }
+    .btn-print:hover { background: var(--accent); transform: translateY(-1px); }
+    .btn-restart { background: var(--surface); border: 1px solid var(--border); color: var(--ink2); font-family: 'Noto Serif KR', serif; font-size: 15px; padding: 16px 36px; cursor: pointer; transition: all 0.2s; }
+    .btn-restart:hover { border-color: var(--ink); color: var(--ink); }
 
-    /* ── 애니메이션 ── */
-    @keyframes fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
-    @keyframes fadeUp   { from { opacity:0; transform:translateY(20px);  } to { opacity:1; transform:translateY(0); } }
+    /* 애니메이션 */
+    @keyframes fadeDown { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeUp   { from { opacity:0; transform:translateY(16px);  } to { opacity:1; transform:translateY(0); } }
     @keyframes spin     { to { transform: rotate(360deg); } }
 
-    /* ── 반응형 ── */
+    /* ══════════ 인쇄 스타일 ══════════ */
+    @media print {
+      /* 화면 요소 숨기기 */
+      .top-bar, .header, .intro-cards, .name-section,
+      .progress-wrap, .questions-header, #mbtiForm,
+      .warning-bar, .submit-wrap, #spinner,
+      #searchResponse, #searchWarningBox, #answerWarningBox,
+      .result-actions { display: none !important; }
+
+      body { background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .container { max-width: 100%; padding: 0 16px; }
+      #resultSection { display: block !important; }
+
+      /* 인쇄 헤더 */
+      .print-only-header {
+        display: flex !important;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0 12px;
+        border-bottom: 2px solid #b8903a;
+        margin-bottom: 0;
+      }
+      .print-only-header .brand { font-family: 'Cormorant Garamond', serif; font-size: 18pt; font-style: italic; color: #b8903a; }
+      .print-only-header .print-date { font-size: 9pt; color: #888; }
+
+      .result-header { padding: 20px 0; border-bottom: 1px solid #ddd; margin-bottom: 20px; }
+      .result-eyebrow { color: #b8903a !important; }
+      .result-mbti-type { font-size: 60pt !important; color: #1a1612 !important; }
+      .mbti-letter { color: #b8903a !important; }
+      .result-alias { color: #555 !important; }
+      .kw-tag { border-color: #b8903a !important; color: #b8903a !important; background: #fdf6e9 !important; }
+
+      .chart-section { border: 1px solid #ddd !important; padding: 16px !important; margin-bottom: 16px !important; page-break-inside: avoid; }
+      .chart-title { color: #b8903a !important; }
+
+      .result-fields { border: 1px solid #ddd !important; margin-bottom: 0 !important; page-break-inside: auto; }
+      .field-row { page-break-inside: avoid; border-bottom: 1px solid #eee !important; }
+      .field-key { background: #fdf6e9 !important; color: #b8903a !important; border-right: 1px solid #ddd !important; font-size: 8pt !important; }
+      .field-val { color: #333 !important; font-size: 10.5pt !important; }
+    }
+
+    /* 반응형 */
     @media (max-width: 600px) {
-      .intro-cards { grid-template-columns: 1fr; }
+      .intro-cards { grid-template-columns: repeat(2, 1fr); }
       .q-choices { padding-left: 0; }
-      .btn-choice { flex: 1; min-width: 120px; }
+      .btn-choice { flex: 1; min-width: 110px; }
       .field-row { grid-template-columns: 1fr; }
-      .field-key { border-right: none; border-bottom: 1px solid rgba(201,168,76,0.1); padding-bottom: 6px; }
-      .field-val { padding-left: 0; }
+      .field-key { border-right: none; border-bottom: 1px solid var(--border); }
     }
   </style>
 </head>
 <body>
 
+<div class="top-bar"></div>
 <div class="container">
 
-  <!-- 헤더 -->
+  <!-- 인쇄 전용 헤더 (화면에서는 숨김) -->
+  <div class="print-only-header" style="display:none;">
+    <div class="brand">Psyche · 성격분석</div>
+    <div class="print-date" id="printDate"></div>
+  </div>
+
+  <!-- 메인 헤더 -->
   <div class="header">
     <div class="header-eyebrow">Jennifer Canvas · 성격 분석</div>
     <h1>Psy<span>che</span></h1>
@@ -532,22 +204,22 @@
     <div class="intro-card">
       <div class="intro-card-num">66</div>
       <div class="intro-card-title">문항 구성</div>
-      <p>정밀한 결과를 위해 설계된<br>66개의 선별 문항</p>
+      <p>정밀한 결과를 위해<br>설계된 66개 문항</p>
     </div>
     <div class="intro-card">
       <div class="intro-card-num">16</div>
       <div class="intro-card-title">성격 유형</div>
-      <p>의사소통, 대인관계, 진로·적성을<br>아우르는 심층 분석</p>
+      <p>의사소통·대인관계·<br>진로·적성 심층 분석</p>
     </div>
     <div class="intro-card">
       <div class="intro-card-num">3</div>
       <div class="intro-card-title">일 보관</div>
-      <p>이름으로 검색 시<br>3일 이내 결과 재확인 가능</p>
+      <p>이름 검색으로<br>3일 이내 재확인 가능</p>
     </div>
     <div class="intro-card">
       <div class="intro-card-num">∞</div>
       <div class="intro-card-title">시각화</div>
-      <p>4가지 축의 점수를<br>막대 그래프로 한눈에</p>
+      <p>4가지 축 점수를<br>그래프로 한눈에</p>
     </div>
   </div>
 
@@ -560,28 +232,25 @@
     </div>
   </div>
 
-  <!-- 경고 메시지 -->
   <div class="warning-bar" id="searchWarningBox"></div>
-
-  <!-- 검색 결과 / 확인 다이얼로그 -->
   <div id="searchResponse"></div>
 
   <!-- 스피너 -->
   <div id="spinner">
     <div class="spinner-ring"></div>
-    <div class="spinner-text">불러오는 중</div>
+    <div class="spinner-text">문항 불러오는 중</div>
   </div>
 
   <!-- 진행 바 -->
-  <div class="progress-wrap" id="progressWrap" style="display:none;">
+  <div class="progress-wrap" id="progressWrap">
     <div class="progress-bar-bg">
       <div class="progress-bar-fill" id="progressFill"></div>
     </div>
     <div class="progress-text" id="progressText">0 / 66</div>
   </div>
 
-  <!-- 문항 구분 헤더 -->
-  <div class="questions-header" id="questionsHeader" style="display:none;">
+  <!-- 문항 구분선 -->
+  <div class="questions-header" id="questionsHeader">
     <div class="questions-header-line"></div>
     <div class="questions-header-text">검사 문항</div>
     <div class="questions-header-line"></div>
@@ -590,18 +259,15 @@
   <!-- 문항 폼 -->
   <form id="mbtiForm"></form>
 
-  <!-- 미응답 경고 -->
   <div class="warning-bar" id="answerWarningBox"></div>
 
-  <!-- 제출 버튼 -->
   <div class="submit-wrap" id="submitWrap">
-    <button class="btn-submit" id="submitBtn" onclick="submitAnswers()">
-      <span>결과 보기</span>
-    </button>
+    <button class="btn-submit" id="submitBtn" onclick="submitAnswers()">결과 보기</button>
   </div>
 
-  <!-- ══════════════════════ 결과 섹션 ══════════════════════ -->
+  <!-- ══════════ 결과 섹션 ══════════ -->
   <div id="resultSection">
+
     <div class="result-header">
       <div class="result-eyebrow">당신의 성격 유형</div>
       <div class="result-mbti-type" id="mbtiTypeDisplay"></div>
@@ -616,21 +282,23 @@
 
     <div class="result-fields" id="resultFields"></div>
 
-    <button class="btn-restart" onclick="location.reload()">처음으로 돌아가기</button>
+    <!-- 버튼 -->
+    <div class="result-actions">
+      <button class="btn-print" onclick="printResult()">🖨️ 인쇄 / PDF 저장</button>
+      <button class="btn-restart" onclick="location.reload()">처음으로 돌아가기</button>
+    </div>
+
   </div>
 
-</div><!-- /container -->
+</div>
 
 <script>
   const FN = "https://us-central1-mbti-project-cb2a0.cloudfunctions.net";
-
   let questionData = [], answers = {}, lastSearchResult = null, chartInst = null;
 
-  // ── API 래퍼 ──────────────────────────────────────────────
   async function api(endpoint, body) {
     const r = await fetch(`${FN}/${endpoint}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
     });
     const d = await r.json();
@@ -638,15 +306,12 @@
     return d;
   }
 
-  // ── 경고 표시 ─────────────────────────────────────────────
   function showWarning(id, msg) {
     const el = document.getElementById(id);
-    el.textContent = msg;
-    el.style.display = "block";
+    el.textContent = msg; el.style.display = "block";
     if (id === "searchWarningBox") setTimeout(() => el.style.display = "none", 4000);
   }
 
-  // ── 스피너 ───────────────────────────────────────────────
   function setSpinner(on) {
     document.getElementById("spinner").style.display = on ? "block" : "none";
     document.getElementById("mbtiForm").style.display = on ? "none" : "block";
@@ -657,16 +322,13 @@
     }
   }
 
-  // ── 진행도 업데이트 ───────────────────────────────────────
   function updateProgress() {
     const done = Object.keys(answers).length;
-    const total = questionData.length;
-    const pct = total ? done / total : 0;
-    document.getElementById("progressFill").style.transform = `scaleX(${pct})`;
+    const total = questionData.length || 66;
+    document.getElementById("progressFill").style.transform = `scaleX(${done / total})`;
     document.getElementById("progressText").textContent = `${done} / ${total}`;
   }
 
-  // ── 문항 로드 ─────────────────────────────────────────────
   window.onload = async () => {
     setSpinner(true);
     try {
@@ -679,7 +341,6 @@
     }
   };
 
-  // ── 문항 렌더링 ───────────────────────────────────────────
   function renderQuestions(data) {
     questionData = data;
     const form = document.getElementById("mbtiForm");
@@ -689,18 +350,17 @@
       div.className = "question";
       div.innerHTML = `
         <div class="q-meta">
-          <div class="q-num">${String(i+1).padStart(2,'0')}</div>
+          <div class="q-num">${String(i+1).padStart(2,"0")}</div>
           <div class="q-text">${q.text}</div>
         </div>
         <div class="q-choices">
-          <button type="button" class="btn-choice" onclick="selectAnswer('${q.id}','${q.code1}',this)"><span>${q.a}</span></button>
-          <button type="button" class="btn-choice" onclick="selectAnswer('${q.id}','${q.code2}',this)"><span>${q.b}</span></button>
+          <button type="button" class="btn-choice" onclick="selectAnswer('${q.id}','${q.code1}',this)">${q.a}</button>
+          <button type="button" class="btn-choice" onclick="selectAnswer('${q.id}','${q.code2}',this)">${q.b}</button>
         </div>`;
       form.appendChild(div);
     });
   }
 
-  // ── 선택 ──────────────────────────────────────────────────
   function selectAnswer(qid, code, btn) {
     answers[qid] = code;
     btn.closest(".q-choices").querySelectorAll(".btn-choice").forEach(b => b.classList.remove("selected"));
@@ -708,50 +368,43 @@
     updateProgress();
   }
 
-  // ── 이름 검색 ─────────────────────────────────────────────
   async function searchPrevious() {
     const name = document.getElementById("nameInput").value.trim();
     if (!name) return showWarning("searchWarningBox", "이름을 입력해주세요.");
     const box = document.getElementById("searchResponse");
-    box.innerHTML = `<div style="font-size:13px;color:var(--dim);padding:12px 0;">검색 중…</div>`;
+    box.innerHTML = `<div style="font-size:13px;color:var(--ink2);padding:10px 0;">검색 중…</div>`;
     try {
       const data = await api("loadPreviousResult", { name });
       lastSearchResult = data.found ? data.result : null;
       if (data.found) {
         box.innerHTML = `<div class="confirm-box">
-          <p>이전 검사 기록이 있습니다.<br>결과를 바로 보시겠습니까?</p>
+          <p>이전 검사 기록이 있습니다. 결과를 바로 보시겠습니까?</p>
           <div class="confirm-btns">
             <button class="btn-yes" onclick="confirmLoad(true)">예, 결과 보기</button>
             <button class="btn-no" onclick="confirmLoad(false)">새로 검사하기</button>
           </div></div>`;
       } else {
         box.innerHTML = `<div class="confirm-box">
-          <p>기존 기록이 없습니다.<br>지금 바로 검사를 시작하시겠습니까?</p>
+          <p>기존 기록이 없습니다. 지금 바로 검사를 시작하시겠습니까?</p>
           <div class="confirm-btns">
             <button class="btn-yes" onclick="confirmLoad(true,true)">예, 시작하기</button>
             <button class="btn-no" onclick="confirmLoad(false)">취소</button>
           </div></div>`;
       }
     } catch(e) {
-      box.innerHTML = `<div style="color:#e8a87c;font-size:13px;padding:12px 0;">오류: ${e.message}</div>`;
+      box.innerHTML = `<div style="color:#e05252;font-size:13px;padding:10px 0;">오류: ${e.message}</div>`;
     }
   }
 
   function confirmLoad(ok, isNew = false) {
     document.getElementById("searchResponse").innerHTML = "";
-    if (ok && lastSearchResult) {
-      renderResult(lastSearchResult);
-    } else if (!ok) {
-      location.reload();
-    }
-    // ok && isNew → 그냥 진행
+    if (ok && lastSearchResult) renderResult(lastSearchResult);
+    else if (!ok) location.reload();
   }
 
-  // ── 응답 제출 ─────────────────────────────────────────────
   async function submitAnswers() {
     const name = document.getElementById("nameInput").value.trim();
     if (!name) return showWarning("searchWarningBox", "이름을 입력해주세요.");
-
     const unanswered = questionData.filter(q => !answers[q.id]);
     if (unanswered.length) {
       showWarning("answerWarningBox",
@@ -759,49 +412,43 @@
       return;
     }
     document.getElementById("answerWarningBox").style.display = "none";
-
     const btn = document.getElementById("submitBtn");
-    btn.disabled = true;
-    btn.querySelector("span").textContent = "분석 중…";
+    btn.disabled = true; btn.textContent = "분석 중…";
     try {
       const desc = await api("saveAnswers", { name, answers });
       renderResult(desc);
     } catch(e) {
       alert("오류: " + e.message);
-      btn.disabled = false;
-      btn.querySelector("span").textContent = "결과 보기";
+      btn.disabled = false; btn.textContent = "결과 보기";
     }
   }
 
-  // ── 결과 렌더링 ───────────────────────────────────────────
   function renderResult(desc) {
     if (!desc || !desc["MBTI 유형"]) { alert("결과를 불러올 수 없습니다."); return; }
 
-    // 폼 숨기기
-    document.getElementById("mbtiForm").style.display = "none";
-    document.getElementById("submitWrap").style.display = "none";
-    document.getElementById("progressWrap").style.display = "none";
-    document.getElementById("questionsHeader").style.display = "none";
+    ["mbtiForm","submitWrap","progressWrap","questionsHeader"].forEach(id => {
+      document.getElementById(id).style.display = "none";
+    });
     document.querySelector(".intro-cards").style.display = "none";
     document.querySelector(".name-section").style.display = "none";
     document.getElementById("searchResponse").innerHTML = "";
 
-    // MBTI 유형 대문자 컬러 표시
+    // 인쇄용 날짜
+    const now = new Date();
+    document.getElementById("printDate").textContent =
+      `${now.getFullYear()}. ${now.getMonth()+1}. ${now.getDate()} 출력`;
+
     const type = desc["MBTI 유형"];
     document.getElementById("mbtiTypeDisplay").innerHTML =
-      type.split("").map(l => `<span class="mbti-letter">${l}</span>`).join("");
-
-    document.getElementById("mbtiAlias").textContent =
-      `"${desc["별칭(일반적 특징)"] || ""}"`;
+      type.split("").map(l=>`<span class="mbti-letter">${l}</span>`).join("");
+    document.getElementById("mbtiAlias").textContent = `"${desc["별칭(일반적 특징)"] || ""}"`;
 
     const kws = (desc["키워드"] || "").split(/[,·]/).map(k=>k.trim()).filter(Boolean);
     document.getElementById("mbtiKeywords").innerHTML =
       kws.map(k=>`<span class="kw-tag">${k}</span>`).join("");
 
-    // 차트
     drawChart(desc);
 
-    // 상세 필드
     const fields = [
       "공통점","속담/격언","싫어하는 말","자주 듣는 말",
       "장점","단점","의사소통 스타일","리더십 스타일",
@@ -818,44 +465,33 @@
     setTimeout(() => document.getElementById("resultSection").scrollIntoView({ behavior:"smooth" }), 100);
   }
 
-  // ── 차트 ──────────────────────────────────────────────────
   function drawChart(desc) {
     if (chartInst) { chartInst.destroy(); chartInst = null; }
-    Chart.defaults.color = "rgba(245,240,232,0.5)";
     const ctx = document.getElementById("mbtiChart").getContext("2d");
     chartInst = new Chart(ctx, {
       type: "bar",
       data: {
         labels: ["에너지 (E·I)", "인식 (S·N)", "판단 (T·F)", "생활 (J·P)"],
         datasets: [
-          {
-            label: "E / S / T / J",
-            data: [desc.E, desc.S, desc.T, desc.J],
-            backgroundColor: "rgba(201,168,76,0.7)",
-            borderColor: "rgba(201,168,76,1)",
-            borderWidth: 1
-          },
-          {
-            label: "I / N / F / P",
-            data: [desc.I, desc.N, desc.F, desc.P],
-            backgroundColor: "rgba(232,213,163,0.3)",
-            borderColor: "rgba(232,213,163,0.7)",
-            borderWidth: 1
-          }
+          { label: "E / S / T / J", data: [desc.E, desc.S, desc.T, desc.J], backgroundColor: "rgba(184,144,58,0.8)", borderColor: "#b8903a", borderWidth: 1 },
+          { label: "I / N / F / P", data: [desc.I, desc.N, desc.F, desc.P], backgroundColor: "rgba(184,144,58,0.2)", borderColor: "rgba(184,144,58,0.6)", borderWidth: 1 }
         ]
       },
       options: {
         responsive: true,
         plugins: {
-          legend: { position:"top", labels:{ font:{ family:"Noto Serif KR", size:12 }, color:"rgba(245,240,232,0.6)", boxWidth:14 } },
-          title:  { display:false }
+          legend: { position:"top", labels:{ font:{ family:"Noto Serif KR", size:12 }, color:"#4a4540", boxWidth:14 } }
         },
         scales: {
-          x: { grid:{ color:"rgba(245,240,232,0.05)" }, ticks:{ font:{ family:"Noto Serif KR" } } },
-          y: { beginAtZero:true, grid:{ color:"rgba(245,240,232,0.05)" }, ticks:{ font:{ family:"Noto Serif KR" } } }
+          x: { grid:{ color:"rgba(0,0,0,0.05)" }, ticks:{ font:{ family:"Noto Serif KR" }, color:"#4a4540" } },
+          y: { beginAtZero:true, grid:{ color:"rgba(0,0,0,0.05)" }, ticks:{ font:{ family:"Noto Serif KR" }, color:"#4a4540" } }
         }
       }
     });
+  }
+
+  function printResult() {
+    window.print();
   }
 </script>
 </body>
